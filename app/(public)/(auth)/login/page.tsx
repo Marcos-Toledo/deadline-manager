@@ -1,7 +1,11 @@
+"use client";
+
+import { useAuth } from "@/app/hooks/useAuth";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
-export default async function Login() {
+export default function Login() {
+  const { googleSignIn } = useAuth();
   return (
     <>
       <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-96 border p-4">
@@ -13,7 +17,10 @@ export default async function Login() {
         </legend>
 
         {/* Google */}
-        <button className="btn bg-white text-black border-[#e5e5e5]">
+        <button
+          className="btn bg-white text-black border-[#e5e5e5]"
+          onClick={googleSignIn}
+        >
           <svg
             aria-label="Google logo"
             width="16"
