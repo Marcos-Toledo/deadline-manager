@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const CTA = () => (
   <section id="pricing" className="py-24 bg-primary text-primary-content">
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -9,12 +11,12 @@ export const CTA = () => (
         seus processos sempre em dia.
       </p>
       <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-        <a
-          href="#register"
+        <Link
+          href="/signup"
           className="btn btn-lg bg-base-100 text-primary border-none hover:bg-base-200"
         >
           Criar conta gratuita
-        </a>
+        </Link>
       </div>
     </div>
   </section>

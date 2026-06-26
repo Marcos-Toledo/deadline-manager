@@ -9,7 +9,7 @@ export default async function Login() {
           <Link href="/" className="absolute top-4 left-4">
             <ArrowLeft className="w-6 h-6" />
           </Link>
-          Login
+          Entrar
         </legend>
 
         {/* Google */}
@@ -41,7 +41,7 @@ export default async function Login() {
               ></path>
             </g>
           </svg>
-          Login with Google
+          Entrar com Google
         </button>
         <p className="text-center mt-4">ou</p>
 

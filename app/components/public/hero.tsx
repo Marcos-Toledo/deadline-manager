@@ -1,4 +1,5 @@
 import { ArrowRight, Bell, CheckCircle2 } from "lucide-react";
+import Link from "next/link";
 
 export const Hero = () => (
   <section className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-base-100">
@@ -29,13 +30,13 @@ export const Hero = () => (
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4">
-            <a href="#register" className="btn btn-primary btn-lg gap-2">
+            <Link href="/signup" className="btn btn-primary btn-lg gap-2">
               Criar conta gratuita
               <ArrowRight className="w-5 h-5" />
-            </a>
-            <a href="#demo" className="btn btn-outline btn-lg">
+            </Link>
+            <Link href="#demo" className="btn btn-outline btn-lg">
               Agendar demonstração
-            </a>
+            </Link>
           </div>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 text-sm text-base-content/60">
