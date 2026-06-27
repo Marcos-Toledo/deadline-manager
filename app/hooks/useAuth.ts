@@ -23,7 +23,7 @@ export const useAuth = () => {
     await fetch("/api/auth/session", {
       method: "DELETE",
     });
-    router.push("/");
+    router.push("/login");
   };
 
   return {
