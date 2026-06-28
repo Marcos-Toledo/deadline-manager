@@ -1,13 +1,15 @@
 import { getApp, getApps, initializeApp } from "firebase/app";
 import type { Auth, User } from "firebase/auth";
 import {
+  createUserWithEmailAndPassword,
   getAuth,
   GoogleAuthProvider,
   signInWithPopup,
   signOut,
+  updateProfile,
 } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
-console.log("API KEY:", process.env.NEXT_PUBLIC_FIREBASE_API_KEY);
+import { doc, getFirestore, setDoc } from "firebase/firestore";
+
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
@@ -23,4 +25,17 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 const auth: Auth = getAuth(app);
 const db = getFirestore(app);
 
-export { auth, Auth, db, GoogleAuthProvider, signInWithPopup, signOut, User };
+export {
+  auth,
+  Auth,
+  createUserWithEmailAndPassword,
+  db,
+  doc,
+  GoogleAuthProvider,
+  setDoc,
+  signInWithPopup,
+  signOut,
+  updateProfile,
+  User
+};
+

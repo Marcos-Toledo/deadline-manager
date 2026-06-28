@@ -3,12 +3,37 @@
 import { useAuth } from "@/app/hooks/useAuth";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 export default function Login() {
-  const { googleSignIn } = useAuth();
+  const { googleSignIn, emailSignIn } = useAuth();
+  const searchParams = useSearchParams();
+  const justRegistered = searchParams.get("registered") === "true";
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleEmailSignIn = async (e: React.SubmitEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      await emailSignIn(email, password);
+    } catch (err: unknown) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
-      <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-96 border p-4">
+      <form
+        className="fieldset bg-base-200 border-base-300 rounded-box w-96 border p-4"
+        onSubmit={handleEmailSignIn}
+      >
         <legend className="fieldset-legend">
           <Link href="/" className="absolute top-4 left-4">
             <ArrowLeft className="w-6 h-6" />
@@ -18,6 +43,7 @@ export default function Login() {
 
         {/* Google */}
         <button
+          type="button"
           className="btn bg-white text-black border-[#e5e5e5]"
           onClick={googleSignIn}
         >
@@ -53,19 +79,48 @@ export default function Login() {
         <p className="text-center mt-4">ou</p>
 
         <div className="flex flex-col gap-4">
+          {justRegistered && (
+            <p className="text-green-600 text-sm">
+              Cadastro realizado! Faça login para continuar.
+            </p>
+          )}
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+
           <div>
-            <label className="label block">Nome</label>
-            <input type="text" className="input" placeholder="Nome" />
+            <label className="label block">Email</label>
+            <input
+              type="email"
+              className="input"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
 
           <div>
             <label className="label block">Senha</label>
-            <input type="password" className="input" placeholder="Senha" />
+            <input
+              type="password"
+              className="input"
+              placeholder="Senha"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
 
           <div className="flex flex-col">
-            <button className="btn btn-neutral mt-4">Entrar</button>
-            <button className="btn btn-ghost mt-2">Esqueci minha senha</button>
+            <button
+              type="submit"
+              className="btn btn-neutral mt-4"
+              disabled={loading}
+            >
+              {loading ? "Entrando..." : "Entrar"}
+            </button>
+            <Link href="/forgot-password" className="btn btn-ghost mt-2">
+              Esqueci minha senha
+            </Link>
           </div>
         </div>
 
@@ -75,7 +130,7 @@ export default function Login() {
             Cadastre-se
           </Link>
         </p>
-      </fieldset>
+      </form>
     </>
   );
 }
