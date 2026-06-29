@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
 import { Loading } from "../components/loading";
+import { ThemeProvider } from "../context/theme";
 import "../globals.css";
 
 const geistSans = Geist({
@@ -31,9 +32,11 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-screen bg-base-100">
-        <main>
-          <Suspense fallback={<Loading />}>{children}</Suspense>
-        </main>
+        <ThemeProvider>
+          <main>
+            <Suspense fallback={<Loading />}>{children}</Suspense>
+          </main>
+        </ThemeProvider>
       </body>
     </html>
   );

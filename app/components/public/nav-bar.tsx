@@ -3,6 +3,7 @@
 import { Clock, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { ThemeController } from "../theme-controller";
 
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -48,19 +49,23 @@ export const Navbar = () => {
             <Link href="/login" className="btn btn-primary btn-sm">
               Começar Grátis
             </Link>
+            <ThemeController />
           </div>
 
-          <button
-            className="md:hidden btn btn-ghost btn-circle"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label={mobileMenuOpen ? "Fechar menu" : "Abrir menu"}
-          >
-            {mobileMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
-          </button>
+          <div className="md:hidden">
+            <ThemeController className="md:hidden" />
+            <button
+              className="md:hidden btn btn-ghost btn-circle"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? "Fechar menu" : "Abrir menu"}
+            >
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 

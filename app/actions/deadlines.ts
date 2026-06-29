@@ -54,7 +54,11 @@ export async function createDeadline(input: CreateDeadlineInput) {
   for (const connection of connections) {
     if (connection.status !== "connected") continue;
     try {
-      const eventId = await syncDeadlineToCalendar(user.uid, deadline, connection.provider);
+      const eventId = await syncDeadlineToCalendar(
+        user.uid,
+        deadline,
+        connection.provider,
+      );
       calendarEventIds[connection.provider] = eventId;
     } catch (err) {
       console.error(`Failed to sync deadline to ${connection.provider}:`, err);
@@ -83,7 +87,10 @@ export async function updateDeadline(id: string, input: UpdateDeadlineInput) {
     return { success: false, error: "Acesso negado." };
   }
 
-  const update: Partial<Deadline> = { ...input, updatedAt: new Date().toISOString() };
+  const update: Partial<Deadline> = {
+    ...input,
+    updatedAt: new Date().toISOString(),
+  };
   await deadlineRef.update(update);
 
   const updated = { ...existing, ...update } as Deadline;
@@ -94,7 +101,10 @@ export async function updateDeadline(id: string, input: UpdateDeadlineInput) {
     try {
       await updateDeadlineCalendarEvent(user.uid, updated, connection.provider);
     } catch (err) {
-      console.error(`Failed to update calendar event on ${connection.provider}:`, err);
+      console.error(
+        `Failed to update calendar event on ${connection.provider}:`,
+        err,
+      );
     }
   }
 
@@ -119,9 +129,16 @@ export async function deleteDeadline(id: string) {
   for (const connection of connections) {
     if (connection.status !== "connected") continue;
     try {
-      await deleteDeadlineCalendarEvent(user.uid, deadline, connection.provider);
+      await deleteDeadlineCalendarEvent(
+        user.uid,
+        deadline,
+        connection.provider,
+      );
     } catch (err) {
-      console.error(`Failed to delete calendar event on ${connection.provider}:`, err);
+      console.error(
+        `Failed to delete calendar event on ${connection.provider}:`,
+        err,
+      );
     }
   }
 

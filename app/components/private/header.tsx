@@ -3,6 +3,7 @@
 import { useAuth } from "@/app/hooks/useAuth";
 import { Clock } from "lucide-react";
 import { useEffect, useState } from "react";
+import { ThemeController } from "../theme-controller";
 
 export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -29,9 +30,12 @@ export const Header = () => {
             <span className="text-xl font-bold tracking-tight">PrazoJus</span>
           </a>
 
-          <button className="btn btn-ghost" onClick={signOut}>
-            Sair
-          </button>
+          <div className="flex items-center gap-4">
+            <ThemeController />
+            <button className="btn btn-ghost" onClick={signOut}>
+              Sair
+            </button>
+          </div>
         </div>
       </div>
     </header>
