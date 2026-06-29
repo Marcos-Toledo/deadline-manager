@@ -90,7 +90,7 @@ export default function Login() {
             <label className="label block">Email</label>
             <input
               type="email"
-              className="input"
+              className="input w-full"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -102,7 +102,7 @@ export default function Login() {
             <label className="label block">Senha</label>
             <input
               type="password"
-              className="input"
+              className="input w-full"
               placeholder="Senha"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -113,7 +113,7 @@ export default function Login() {
           <div className="flex flex-col">
             <button
               type="submit"
-              className="btn btn-neutral mt-4"
+              className="btn btn-primary mt-4"
               disabled={loading}
             >
               {loading ? "Entrando..." : "Entrar"}

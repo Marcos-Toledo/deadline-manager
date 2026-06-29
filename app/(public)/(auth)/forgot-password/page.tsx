@@ -45,7 +45,7 @@ export default function ForgotPassword() {
       <label className="label block">Email</label>
       <input
         type="email"
-        className="input"
+        className="input w-full"
         placeholder="seuemail@exemplo.com"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -57,7 +57,7 @@ export default function ForgotPassword() {
           Link de recuperação enviado!
         </p>
       )}
-      <button type="submit" className="btn btn-neutral mt-4" disabled={loading}>
+      <button type="submit" className="btn btn-primary mt-4" disabled={loading}>
         {loading ? "Enviando..." : "Enviar link de recuperação"}
       </button>
     </form>

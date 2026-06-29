@@ -9,15 +9,22 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@azure/msal-node": "5.3.0",
+    "@microsoft/microsoft-graph-client": "3.0.7",
+    "@types/crypto-js": "4.2.2",
+    "crypto-js": "4.2.0",
     "firebase-admin": "^14.1.0",
     "firebaseui": "^6.1.0",
+    "googleapis": "173.0.0",
     "lucide-react": "^1.21.0",
     "next": "16.2.9",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@microsoft/microsoft-graph-types": "2.43.1",
     "@tailwindcss/postcss": "^4",
+    "@types/microsoft-graph": "2.40.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
