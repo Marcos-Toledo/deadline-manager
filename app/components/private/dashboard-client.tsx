@@ -1,12 +1,12 @@
 "use client";
 
+import { useEditDeadline } from "@/app/context/edit-deadline";
 import type { CalendarEvent, CalendarProvider, Deadline } from "@/app/types";
-import { Info } from "lucide-react";
+import { Info, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CalendarConnections } from "./calendar-connections";
 import { CalendarEventsList } from "./calendar-events-list";
-import { DeadlineForm } from "./deadline-form";
 import { DeadlinesList } from "./deadlines-list";
 
 interface ConnectionInfo {
@@ -31,6 +31,8 @@ export function DashboardClient({
   const [activeTab, setActiveTab] = useState<"deadlines" | "events">(
     "deadlines",
   );
+  const { openModal = () => {}, setIsEditing = () => {} } =
+    useEditDeadline() || {};
 
   return (
     <div className="flex flex-col gap-6 py-6">
@@ -64,7 +66,17 @@ export function DashboardClient({
       {activeTab === "deadlines" ? (
         <div className="flex flex-col gap-4">
           <div className="flex justify-end">
-            <DeadlineForm onSuccess={() => router.refresh()} />
+            <button
+              type="button"
+              onClick={() => {
+                setIsEditing(false);
+                openModal();
+              }}
+              className="btn btn-primary"
+            >
+              <Plus className="w-5 h-5" />
+              Adicionar prazo
+            </button>
           </div>
           <DeadlinesList
             deadlines={deadlines}

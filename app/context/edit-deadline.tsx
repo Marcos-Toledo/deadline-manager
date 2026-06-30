@@ -1,9 +1,16 @@
 "use client";
 
-import { createDeadline } from "@/app/actions/deadlines";
+import { createDeadline, updateDeadline } from "@/app/actions/deadlines";
 import { type CreateDeadlineInput, type DeadlineType } from "@/app/types";
-import { Loader2, Plus } from "lucide-react";
-import { useRef, useState, useTransition } from "react";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import {
+  createContext,
+  useContext,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 
 const TYPE_OPTIONS: { value: DeadlineType; label: string }[] = [
   { value: "hearing", label: "Audiência" },
@@ -14,6 +21,7 @@ const TYPE_OPTIONS: { value: DeadlineType; label: string }[] = [
 ];
 
 const INITIAL_FORM: CreateDeadlineInput = {
+  id: "",
   title: "",
   description: "",
   date: "",
@@ -21,16 +29,31 @@ const INITIAL_FORM: CreateDeadlineInput = {
   processNumber: "",
 };
 
-interface DeadlineFormProps {
-  onSuccess?: () => void;
-  children?: React.ReactNode;
+interface EditDeadlineContextType {
+  openModal?: () => void;
+  setForm?: (form: CreateDeadlineInput) => void;
+  setIsEditing?: (isEditing: boolean) => void;
 }
 
-export function DeadlineForm({ onSuccess, children }: DeadlineFormProps) {
+const EditDeadlineContext = createContext<EditDeadlineContextType>({
+  openModal: () => {},
+  setForm: () => {},
+  setIsEditing: () => {},
+});
+
+export const useEditDeadline = () => useContext(EditDeadlineContext);
+
+export const EditDeadlineProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const router = useRouter();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState<CreateDeadlineInput>(INITIAL_FORM);
+  const [isEditing, setIsEditing] = useState(false);
 
   const openModal = () => dialogRef.current?.showModal();
   const closeModal = () => {
@@ -38,7 +61,7 @@ export function DeadlineForm({ onSuccess, children }: DeadlineFormProps) {
     setError(null);
   };
 
-  const handleSubmit = (e: React.SubmitEvent) => {
+  const handleSubmitCreate = (e: React.SubmitEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -47,31 +70,45 @@ export function DeadlineForm({ onSuccess, children }: DeadlineFormProps) {
       if (result.success) {
         setForm(INITIAL_FORM);
         closeModal();
-        onSuccess?.();
+        router.refresh();
       } else {
         setError(result.error ?? "Erro ao criar prazo.");
       }
     });
   };
 
+  const handleSubmitEdit = (e: React.SubmitEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    startTransition(async () => {
+      const result = await updateDeadline(form.id!, form);
+      if (result.success) {
+        setForm(INITIAL_FORM);
+        closeModal();
+        router.refresh();
+      } else {
+        setError(result.error ?? "Erro ao atualizar prazo.");
+      }
+    });
+  };
+
   return (
-    <>
-      {children ? (
-        { children }
-      ) : (
-        <button className="btn btn-primary" onClick={openModal}>
-          <Plus className="w-5 h-5" />
-          Novo prazo
-        </button>
-      )}
+    <EditDeadlineContext.Provider value={{ openModal, setForm, setIsEditing }}>
+      {children}
 
       <dialog ref={dialogRef} className="modal">
         <div className="modal-box">
-          <h3 className="font-bold text-lg mb-4">Novo prazo</h3>
+          <h3 className="font-bold text-lg mb-4">
+            {isEditing ? "Editar prazo" : "Novo prazo"}
+          </h3>
 
           {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          <form
+            onSubmit={isEditing ? handleSubmitEdit : handleSubmitCreate}
+            className="flex flex-col gap-3"
+          >
             <div>
               <label className="label">Título</label>
               <input
@@ -165,6 +202,6 @@ export function DeadlineForm({ onSuccess, children }: DeadlineFormProps) {
           <button>close</button>
         </form>
       </dialog>
-    </>
+    </EditDeadlineContext.Provider>
   );
-}
+};

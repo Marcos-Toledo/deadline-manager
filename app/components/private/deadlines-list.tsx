@@ -4,9 +4,11 @@ import {
   deleteDeadline,
   syncDeadlineFromCalendar,
 } from "@/app/actions/deadlines";
+import { useEditDeadline } from "@/app/context/edit-deadline";
 import { compareDeadlineWithCalendarEvent } from "@/app/lib/calendar/compare";
 import type { CalendarEvent, Deadline } from "@/app/types";
-import { RefreshCw, Trash2 } from "lucide-react";
+import { formatDateTimeLocal } from "@/app/utils/formatDateTimeLocal";
+import { Pencil, RefreshCw, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useTransition } from "react";
 
@@ -50,6 +52,11 @@ export function DeadlinesList({
   const [deleting, startDelete] = useTransition();
   const [syncing, startSync] = useTransition();
   const router = useRouter();
+  const {
+    setForm = () => {},
+    setIsEditing = () => {},
+    openModal = () => {},
+  } = useEditDeadline() || {};
 
   const divergences = useMemo(() => {
     const map = new Map<string, Array<"title" | "description" | "date">>();
@@ -173,6 +180,25 @@ export function DeadlinesList({
                               <RefreshCw className="w-4 h-4" />
                             </button>
                           )}
+                          <button
+                            className="btn btn-ghost btn-xs"
+                            onClick={() => {
+                              openModal();
+                              setIsEditing(true);
+                              setForm({
+                                id: deadline.id,
+                                title: deadline.title,
+                                description: deadline.description,
+                                date: formatDateTimeLocal(
+                                  new Date(deadline.date),
+                                ),
+                                type: deadline.type,
+                                processNumber: deadline.processNumber,
+                              });
+                            }}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
                           <button
                             className="btn btn-ghost btn-xs text-error"
                             onClick={() => handleDelete(deadline.id)}

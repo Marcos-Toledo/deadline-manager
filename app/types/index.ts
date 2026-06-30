@@ -52,6 +52,7 @@ export interface CalendarEvent {
 }
 
 export interface CreateDeadlineInput {
+  id?: string;
   title: string;
   description: string;
   date: string;
@@ -60,6 +61,7 @@ export interface CreateDeadlineInput {
 }
 
 export interface UpdateDeadlineInput {
+  id?: string;
   title?: string;
   description?: string;
   date?: string;
