@@ -4,6 +4,7 @@ import { adminDb } from "@/app/config/firebase-admin";
 import { requireAuth } from "@/app/lib/auth";
 import {
   deleteDeadlineCalendarEvent,
+  findDivergentCalendarEvent,
   syncDeadlineToCalendar,
   updateDeadlineCalendarEvent,
 } from "@/app/lib/calendar";
@@ -144,6 +145,45 @@ export async function deleteDeadline(id: string) {
 
   await deadlineRef.delete();
   return { success: true };
+}
+
+export async function syncDeadlineFromCalendar(id: string) {
+  const user = await requireAuth();
+  const deadlineRef = adminDb.collection(COLLECTION).doc(id);
+  const snapshot = await deadlineRef.get();
+
+  if (!snapshot.exists) {
+    return { success: false, error: "Prazo não encontrado." };
+  }
+
+  const existing = snapshot.data() as Deadline;
+  if (existing.userId !== user.uid) {
+    return { success: false, error: "Acesso negado." };
+  }
+
+  const divergence = await findDivergentCalendarEvent(user.uid, existing);
+  if (!divergence) {
+    return { success: true, deadline: existing, synced: false };
+  }
+
+  const update: Partial<Deadline> = {
+    updatedAt: new Date().toISOString(),
+  };
+
+  if (divergence.fieldDifferences.includes("title")) {
+    update.title = divergence.calendarEvent.summary;
+  }
+  if (divergence.fieldDifferences.includes("description")) {
+    update.description = divergence.calendarEvent.description ?? "";
+  }
+  if (divergence.fieldDifferences.includes("date")) {
+    update.date = new Date(divergence.calendarEvent.start).toISOString();
+  }
+
+  await deadlineRef.update(update);
+  const updated = { ...existing, ...update } as Deadline;
+
+  return { success: true, deadline: updated, synced: true };
 }
 
 export async function getUserDeadlines(): Promise<Deadline[]> {

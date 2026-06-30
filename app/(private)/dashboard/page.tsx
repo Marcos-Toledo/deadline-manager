@@ -11,17 +11,11 @@ export default async function Dashboard() {
   const [connections, deadlines, googleEvents, outlookEvents] =
     await Promise.all([
       getConnectedCalendars().catch(() => []),
-      getUserDeadlines().catch((err) => {
-        console.error("getUserDeadlines error:", err);
-        return [];
-      }),
+      getUserDeadlines().catch(() => []),
       getAppCalendarEvents("google").catch(() => []),
       getAppCalendarEvents("outlook").catch(() => []),
     ]);
-  console.log("connections", connections);
-  console.log("deadlines", deadlines);
-  console.log("googleEvents", googleEvents);
-  console.log("outlookEvents", outlookEvents);
+
   return (
     <DashboardClient
       connections={connections}

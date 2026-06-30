@@ -3,7 +3,9 @@
 import type { CalendarEvent, CalendarProvider, Deadline } from "@/app/types";
 import { Info } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { CalendarConnections } from "./calendar-connections";
+import { CalendarEventsList } from "./calendar-events-list";
 import { DeadlineForm } from "./deadline-form";
 import { DeadlinesList } from "./deadlines-list";
 
@@ -26,6 +28,9 @@ export function DashboardClient({
 }: DashboardClientProps) {
   const router = useRouter();
   const connectionsCount = connections.length;
+  const [activeTab, setActiveTab] = useState<"deadlines" | "events">(
+    "deadlines",
+  );
 
   return (
     <div className="flex flex-col gap-6 py-6">
@@ -41,11 +46,34 @@ export function DashboardClient({
         </div>
       )}
 
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold">Prazos</h2>
-        <DeadlineForm onSuccess={() => router.refresh()} />
+      <div className="tabs tabs-border">
+        <button
+          className={`tab ${activeTab === "deadlines" ? "tab-active" : ""}`}
+          onClick={() => setActiveTab("deadlines")}
+        >
+          Prazos
+        </button>
+        <button
+          className={`tab ${activeTab === "events" ? "tab-active" : ""}`}
+          onClick={() => setActiveTab("events")}
+        >
+          Eventos nos calendários
+        </button>
       </div>
-      <DeadlinesList deadlines={deadlines} calendarEvents={calendarEvents} />
+
+      {activeTab === "deadlines" ? (
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-end">
+            <DeadlineForm onSuccess={() => router.refresh()} />
+          </div>
+          <DeadlinesList
+            deadlines={deadlines}
+            calendarEvents={calendarEvents}
+          />
+        </div>
+      ) : (
+        <CalendarEventsList calendarEvents={calendarEvents} />
+      )}
     </div>
   );
 }
