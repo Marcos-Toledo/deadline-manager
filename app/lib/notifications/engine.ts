@@ -166,7 +166,7 @@ export async function processNotificationsForUser(
   const batch = adminDb.batch();
 
   for (const doc of deadlinesSnapshot.docs) {
-    const deadline = doc.data() as Deadline;
+    const deadline = { id: doc.id, ...doc.data() } as Deadline;
     const daysUntil = calculateDaysUntilDeadline(
       deadline.date,
       preferences.timezone,
@@ -192,6 +192,16 @@ export async function processNotificationsForUser(
             notificationRef,
             buildInAppNotification(userId, deadline, window),
           );
+          batch.set(adminDb.collection(NOTIFICATION_LOGS_COLLECTION).doc(), {
+            userId,
+            deadlineId: deadline.id,
+            window,
+            channel: "in-app",
+            status: "sent",
+            sentAt: now,
+          } as Omit<NotificationLog, "id">);
+          createdCount++;
+          continue;
         }
 
         if (channel === "email") {
@@ -283,7 +293,7 @@ export async function runNotificationEngine(): Promise<{
   let created = 0;
 
   for (const doc of usersSnapshot.docs) {
-    const user = doc.data() as User;
+    const user = { uid: doc.id, ...doc.data() } as User;
     const preferences =
       user.notificationPreferences ?? DEFAULT_NOTIFICATION_PREFERENCES;
     if (!shouldProcessUser(preferences)) continue;

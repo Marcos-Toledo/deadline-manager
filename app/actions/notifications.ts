@@ -89,7 +89,9 @@ export async function getUserNotifications(): Promise<InAppNotification[]> {
     .orderBy("createdAt", "desc")
     .limit(50)
     .get();
-  return snapshot.docs.map((doc) => doc.data() as InAppNotification);
+  return snapshot.docs.map(
+    (doc) => ({ id: doc.id, ...doc.data() }) as InAppNotification,
+  );
 }
 
 export async function markNotificationsAsRead(notificationIds: string[]) {
