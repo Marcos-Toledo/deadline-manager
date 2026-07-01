@@ -21,7 +21,7 @@ export const Header = () => {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-base-100/90 backdrop-blur-md shadow-sm"
+          ? "bg-base-100/70 backdrop-blur-md shadow-sm"
           : "bg-transparent"
       }`}
     >
@@ -40,6 +40,9 @@ export const Header = () => {
             <NotificationBell />
             <Link href="/alert-settings" className="btn btn-ghost">
               Configurações
+            </Link>
+            <Link href="/profile" className="btn btn-ghost">
+              Perfil
             </Link>
             <button className="btn btn-ghost" onClick={signOut}>
               Sair

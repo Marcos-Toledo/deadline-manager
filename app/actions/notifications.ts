@@ -44,7 +44,6 @@ function sanitizePreferences(
         : "08:00",
     timezone:
       typeof input.timezone === "string" ? input.timezone : "America/Sao_Paulo",
-    phoneNumber: typeof input.phoneNumber === "string" ? input.phoneNumber : "",
   };
 }
 

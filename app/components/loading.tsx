@@ -13,9 +13,9 @@ export const Loading = () => {
           r="10"
           fill="none"
           stroke="currentColor"
-          stroke-width="2"
+          strokeWidth="2"
         />
-        <g stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <g stroke="currentColor" strokeWidth="2" strokeLinecap="round">
           {/* Fast Hand */}
           <line
             x1="12"

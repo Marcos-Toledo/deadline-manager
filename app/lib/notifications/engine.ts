@@ -223,12 +223,8 @@ export async function processNotificationsForUser(
         }
 
         if (channel === "sms") {
-          const result = preferences.phoneNumber
-            ? await sendSmsNotification(
-                preferences.phoneNumber,
-                deadline,
-                window,
-              )
+          const result = user.phoneNumber
+            ? await sendSmsNotification(user.phoneNumber, deadline, window)
             : { status: "failed", sentAt: new Date().toISOString() };
           batch.set(adminDb.collection(NOTIFICATION_LOGS_COLLECTION).doc(), {
             userId,
@@ -243,12 +239,8 @@ export async function processNotificationsForUser(
         }
 
         if (channel === "whatsapp") {
-          const result = preferences.phoneNumber
-            ? await sendWhatsAppNotification(
-                preferences.phoneNumber,
-                deadline,
-                window,
-              )
+          const result = user.phoneNumber
+            ? await sendWhatsAppNotification(user.phoneNumber, deadline, window)
             : { status: "failed", sentAt: new Date().toISOString() };
           batch.set(adminDb.collection(NOTIFICATION_LOGS_COLLECTION).doc(), {
             userId,

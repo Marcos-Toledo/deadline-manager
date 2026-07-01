@@ -1,10 +1,10 @@
 import { getUserProfile } from "@/app/actions/profile";
-import { NotificationPreferencesPanel } from "@/app/components/private/notification-preferences";
+import { ProfileForm } from "@/app/components/private/profile-form";
 import Link from "next/link";
 
-export default async function AlertSettingsPage() {
+export default async function ProfilePage() {
   const profile = await getUserProfile();
-
+  console.log({ profile });
   return (
     <div className="flex flex-col gap-6 py-6">
       <div className="breadcrumbs text-sm">
@@ -13,12 +13,12 @@ export default async function AlertSettingsPage() {
             <Link href="/dashboard">Home</Link>
           </li>
           <li>
-            <Link href="/alert-settings">Configurações</Link>
+            <Link href="/profile">Perfil</Link>
           </li>
         </ul>
       </div>
 
-      <NotificationPreferencesPanel phoneNumber={profile?.phoneNumber} />
+      <ProfileForm initialProfile={profile} />
     </div>
   );
 }

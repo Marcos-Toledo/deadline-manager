@@ -50,7 +50,6 @@ export interface NotificationPreferences {
   channels: Record<NotificationChannel, boolean>;
   time: string;
   timezone: string;
-  phoneNumber: string;
 }
 
 export const DEFAULT_NOTIFICATION_WINDOWS = [7, 3, 1];
@@ -67,13 +66,14 @@ export const DEFAULT_NOTIFICATION_PREFERENCES: NotificationPreferences = {
   },
   time: "08:00",
   timezone: "America/Sao_Paulo",
-  phoneNumber: "",
 };
 
 export interface User {
   uid: string;
   name: string;
   email: string;
+  phoneNumber?: string;
+  oab?: string;
   createdAt: string;
   role: string;
   notificationPreferences?: NotificationPreferences;

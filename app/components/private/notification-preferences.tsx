@@ -9,6 +9,7 @@ import {
   type NotificationPreferences,
 } from "@/app/types";
 import { Bell, Loader2, Save } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
 import { PushToggle } from "./push-toggle";
 
@@ -31,7 +32,13 @@ const TIMEZONES = [
   "America/Noronha",
 ];
 
-export function NotificationPreferencesPanel() {
+interface NotificationPreferencesPanelProps {
+  phoneNumber?: string;
+}
+
+export function NotificationPreferencesPanel({
+  phoneNumber,
+}: NotificationPreferencesPanelProps) {
   const [preferences, setPreferences] =
     useState<NotificationPreferences | null>(null);
   const [loading, setLoading] = useState(true);
@@ -95,12 +102,11 @@ export function NotificationPreferencesPanel() {
     <div className="card bg-base-200 border-base-300 border">
       <div className="card-body">
         <div className="flex items-center gap-2 mb-4">
-          <Bell className="w-5 h-5 text-primary" />
-          <h2 className="card-title">Preferências de alerta</h2>
-        </div>
-
-        <div className="flex flex-col gap-4">
-          <label className="flex items-center gap-3 cursor-pointer">
+          <div className="flex items-center gap-2">
+            <Bell className="w-5 h-5 text-primary" />
+            <h2 className="card-title">Preferências de alerta</h2>
+          </div>
+          <label className="flex items-center gap-3 cursor-pointer ml-auto">
             <input
               type="checkbox"
               className="toggle toggle-primary"
@@ -112,9 +118,13 @@ export function NotificationPreferencesPanel() {
                 })
               }
             />
-            <span className="font-medium">Ativar alertas de prazo</span>
+            <span className="font-medium hidden md:block">
+              Ativar alertas de prazo
+            </span>
           </label>
+        </div>
 
+        <div className="flex flex-col gap-4">
           <div
             className={`flex flex-col gap-4 ${preferences.enabled ? "" : "opacity-50 pointer-events-none"}`}
           >
@@ -181,10 +191,10 @@ export function NotificationPreferencesPanel() {
                       channel === "in-app" ||
                       channel === "email" ||
                       channel === "push" ||
-                      channel === "sms" ||
-                      channel === "whatsapp";
+                      ((channel === "sms" || channel === "whatsapp") &&
+                        Boolean(phoneNumber));
                     return (
-                      <div key={channel} className="flex flex-col gap-2">
+                      <div key={channel} className="flex items-center gap-2">
                         <label
                           className={`flex items-center gap-3 cursor-pointer ${
                             isAvailable ? "" : "opacity-60"
@@ -199,11 +209,20 @@ export function NotificationPreferencesPanel() {
                           />
                           <span>
                             {CHANNEL_LABELS[channel]}
-                            {!isAvailable && (
-                              <span className="text-xs text-base-content/50 ml-2">
-                                (em breve)
-                              </span>
-                            )}
+                            {!isAvailable &&
+                              (channel === "sms" || channel === "whatsapp" ? (
+                                <span className="text-xs text-base-content/50 ml-2">
+                                  (
+                                  <Link href="/profile" className="link">
+                                    cadastre um telefone
+                                  </Link>
+                                  )
+                                </span>
+                              ) : (
+                                <span className="text-xs text-base-content/50 ml-2">
+                                  (em breve)
+                                </span>
+                              ))}
                           </span>
                         </label>
                         {channel === "push" && preferences.channels.push && (
@@ -216,26 +235,6 @@ export function NotificationPreferencesPanel() {
                   },
                 )}
               </div>
-              {(preferences.channels.sms || preferences.channels.whatsapp) && (
-                <div className="mt-3">
-                  <label className="label">Número de telefone</label>
-                  <input
-                    type="tel"
-                    className="input w-full"
-                    placeholder="+55 11 99999-9999"
-                    value={preferences.phoneNumber}
-                    onChange={(e) =>
-                      setPreferences({
-                        ...preferences,
-                        phoneNumber: e.target.value,
-                      })
-                    }
-                  />
-                  <p className="text-xs text-base-content/50 mt-1">
-                    Informe o número com DDD e código do país (ex: +55...).
-                  </p>
-                </div>
-              )}
             </div>
           </div>
 
