@@ -31,7 +31,7 @@ function getAlertLabel(days: number): string | null {
   if (days < 0) return "Atrasado";
   if (days === 0) return "Hoje";
   if (days === 1) return "1 dia";
-  if (days <= 7) return `${days > 1 ? days - 1 : days} dias`;
+  if (days <= 7) return `${days} dias`;
   return null;
 }
 
