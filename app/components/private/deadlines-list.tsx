@@ -20,6 +20,21 @@ const TYPE_LABELS: Record<Deadline["type"], string> = {
   other: "Outro",
 };
 
+function calculateDaysUntilDeadline(date: string): number {
+  const deadline = new Date(date);
+  const now = new Date();
+  const diff = deadline.getTime() - now.getTime();
+  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+}
+
+function getAlertLabel(days: number): string | null {
+  if (days < 0) return "Atrasado";
+  if (days === 0) return "Hoje";
+  if (days === 1) return "1 dia";
+  if (days <= 7) return `${days} dias`;
+  return null;
+}
+
 interface DeadlinesListProps {
   deadlines: Deadline[];
   calendarEvents: CalendarEvent[];
@@ -129,6 +144,8 @@ export function DeadlinesList({
               <tbody>
                 {deadlines.map((deadline) => {
                   const differences = divergences.get(deadline.id);
+                  const daysUntil = calculateDaysUntilDeadline(deadline.date);
+                  const alertLabel = getAlertLabel(daysUntil);
                   return (
                     <tr key={deadline.id}>
                       <td>
@@ -139,7 +156,22 @@ export function DeadlinesList({
                       </td>
                       <td>{deadline.processNumber}</td>
                       <td>{TYPE_LABELS[deadline.type]}</td>
-                      <td>{formatDate(deadline.date)}</td>
+                      <td>
+                        <div>{formatDate(deadline.date)}</div>
+                        {alertLabel && deadline.status === "pending" && (
+                          <span
+                            className={`badge badge-xs ${
+                              daysUntil < 0
+                                ? "badge-error"
+                                : daysUntil <= 1
+                                  ? "badge-error"
+                                  : "badge-warning"
+                            }`}
+                          >
+                            {alertLabel}
+                          </span>
+                        )}
+                      </td>
                       <td>
                         <div className="flex flex-wrap gap-1">
                           {deadline.calendarEventIds?.google && (

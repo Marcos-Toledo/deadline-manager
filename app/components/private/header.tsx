@@ -2,8 +2,10 @@
 
 import { useAuth } from "@/app/hooks/useAuth";
 import { Clock } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ThemeController } from "../theme-controller";
+import { NotificationBell } from "./notification-bell";
 
 export const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -25,13 +27,20 @@ export const Header = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          <a href="#" className="flex items-center gap-2 text-primary">
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-2 text-primary"
+          >
             <Clock className="w-8 h-8" />
             <span className="text-xl font-bold tracking-tight">PrazoJus</span>
-          </a>
+          </Link>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <ThemeController />
+            <NotificationBell />
+            <Link href="/alert-settings" className="btn btn-ghost">
+              Configurações
+            </Link>
             <button className="btn btn-ghost" onClick={signOut}>
               Sair
             </button>
