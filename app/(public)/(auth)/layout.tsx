@@ -15,6 +15,9 @@ export default async function AuthLayout({
             alt="Background"
             width={1920}
             height={1080}
+            priority={true}
+            placeholder="blur"
+            blurDataURL="/img/bg-auth.png"
             className="w-full h-full object-cover"
           />
         </div>
