@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const CTA = () => (
-  <section id="pricing" className="py-24 bg-primary text-primary-content">
+  <section className="py-24 bg-primary text-primary-content">
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <h2 className="text-3xl sm:text-4xl font-bold">
         Pronto para organizar seus prazos?

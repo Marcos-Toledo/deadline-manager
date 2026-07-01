@@ -18,7 +18,7 @@ export const Navbar = () => {
   const navLinks = [
     { label: "Recursos", href: "#features" },
     { label: "Preços", href: "#pricing" },
-    { label: "Sobre", href: "#about" },
+    { label: "Sobre", href: "#demo" },
   ];
 
   return (
