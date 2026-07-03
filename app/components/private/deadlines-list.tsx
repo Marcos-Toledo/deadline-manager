@@ -8,6 +8,7 @@ import { useEditDeadline } from "@/app/context/edit-deadline";
 import { compareDeadlineWithCalendarEvent } from "@/app/lib/calendar/compare";
 import type { CalendarEvent, Deadline } from "@/app/types";
 import { formatDateTimeLocal } from "@/app/utils/formatDateTimeLocal";
+import { formatarProcessoCNJ } from "@/app/utils/formatter-process-number";
 import { Pencil, RefreshCw, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useTransition } from "react";
@@ -135,6 +136,7 @@ export function DeadlinesList({
                 <tr>
                   <th>Título</th>
                   <th>Processo</th>
+                  <th>Último andamento</th>
                   <th>Tipo</th>
                   <th>Data</th>
                   <th>Calendários</th>
@@ -154,7 +156,26 @@ export function DeadlinesList({
                           {deadline.description}
                         </div>
                       </td>
-                      <td>{deadline.processNumber}</td>
+                      <td>{formatarProcessoCNJ(deadline.processNumber)}</td>
+                      <td>
+                        {deadline.processMetadata?.ultimoMovimento ? (
+                          <div>
+                            <div className="text-sm font-medium">
+                              {deadline.processMetadata.ultimoMovimento.nome}
+                            </div>
+                            <div className="text-xs text-base-content/60">
+                              {formatDate(
+                                deadline.processMetadata.ultimoMovimento
+                                  .dataHora,
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-base-content/50">
+                            Não disponível
+                          </span>
+                        )}
+                      </td>
                       <td>{TYPE_LABELS[deadline.type]}</td>
                       <td>
                         <div>{formatDate(deadline.date)}</div>

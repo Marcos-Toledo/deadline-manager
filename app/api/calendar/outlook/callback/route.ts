@@ -27,9 +27,14 @@ export async function GET(request: NextRequest) {
       throw new Error("Missing OAuth code or state");
     }
 
-    const { verifier } = await consumeOAuthCookies("outlook", state);
+    const { verifier, userId } = await consumeOAuthCookies("outlook", state);
     if (!verifier) {
       throw new Error("Missing OAuth code verifier");
+    }
+    if (userId && userId !== user.uid) {
+      throw new Error(
+        "Session mismatch: o usuário que iniciou a conexão é diferente do usuário atual",
+      );
     }
 
     const tokens = await getMicrosoftTokensFromCode(code, verifier);
@@ -51,15 +56,15 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.redirect(
-      new URL("/dashboard?calendar_connected=outlook", request.url)
+      new URL("/dashboard?calendar_connected=outlook", request.url),
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.redirect(
       new URL(
         `/dashboard?calendar_error=${encodeURIComponent(message)}`,
-        request.url
-      )
+        request.url,
+      ),
     );
   }
 }

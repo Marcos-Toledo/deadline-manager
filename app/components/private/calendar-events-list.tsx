@@ -12,7 +12,9 @@ interface CalendarEventsListProps {
   calendarEvents: CalendarEvent[];
 }
 
-export function CalendarEventsList({ calendarEvents }: CalendarEventsListProps) {
+export function CalendarEventsList({
+  calendarEvents,
+}: CalendarEventsListProps) {
   const formatDate = (date: string) => {
     return new Date(date).toLocaleString("pt-BR", {
       dateStyle: "short",

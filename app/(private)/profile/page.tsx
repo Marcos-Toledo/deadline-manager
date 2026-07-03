@@ -4,7 +4,7 @@ import Link from "next/link";
 
 export default async function ProfilePage() {
   const profile = await getUserProfile();
-  console.log({ profile });
+
   return (
     <div className="flex flex-col gap-6 py-6">
       <div className="breadcrumbs text-sm">

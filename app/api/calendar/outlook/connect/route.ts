@@ -1,3 +1,4 @@
+import { requireAuth } from "@/app/lib/auth";
 import {
   generateCodeChallenge,
   generateCodeVerifier,
@@ -9,10 +10,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
+    const user = await requireAuth();
     const state = generateOAuthState();
     const verifier = generateCodeVerifier();
     const challenge = generateCodeChallenge(verifier);
-    await setOAuthCookies("outlook", state, verifier);
+    await setOAuthCookies("outlook", state, verifier, user.uid);
     const url = getMicrosoftAuthUrl(state, challenge);
     return NextResponse.redirect(url);
   } catch (error) {
@@ -20,8 +22,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(
       new URL(
         `/dashboard?calendar_error=${encodeURIComponent(message)}`,
-        request.url
-      )
+        request.url,
+      ),
     );
   }
 }

@@ -11,6 +11,7 @@ import {
   useState,
   useTransition,
 } from "react";
+import { formatarProcessoCNJ } from "../utils/formatter-process-number";
 
 const TYPE_OPTIONS: { value: DeadlineType; label: string }[] = [
   { value: "hearing", label: "Audiência" },
@@ -43,7 +44,7 @@ const EditDeadlineContext = createContext<EditDeadlineContextType>({
 
 export const useEditDeadline = () => useContext(EditDeadlineContext);
 
-export const EditDeadlineProvider = ({
+export const DeadlineFormProvider = ({
   children,
 }: {
   children: React.ReactNode;
@@ -127,9 +128,12 @@ export const EditDeadlineProvider = ({
                 type="text"
                 className="input w-full"
                 placeholder="Ex: 0000000-00.0000.0.00.0000"
-                value={form.processNumber}
+                value={formatarProcessoCNJ(form.processNumber)}
                 onChange={(e) =>
-                  setForm({ ...form, processNumber: e.target.value })
+                  setForm({
+                    ...form,
+                    processNumber: e.target.value.replace(/\D/g, ""),
+                  })
                 }
                 required
               />

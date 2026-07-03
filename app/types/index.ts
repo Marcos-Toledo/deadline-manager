@@ -1,3 +1,5 @@
+import type { ProcessoMetadata } from "@/app/types/processo";
+
 export type CalendarProvider = "google" | "outlook";
 
 export type DeadlineStatus = "pending" | "completed" | "cancelled";
@@ -21,6 +23,7 @@ export interface Deadline {
   createdAt: string;
   updatedAt: string;
   calendarEventIds?: Partial<Record<CalendarProvider, string>>;
+  processMetadata?: ProcessoMetadata;
 }
 
 export interface CalendarConnection {

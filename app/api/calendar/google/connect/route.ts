@@ -1,14 +1,16 @@
+import { requireAuth } from "@/app/lib/auth";
 import { getGoogleAuthUrl } from "@/app/lib/calendar/google";
 import {
-    generateOAuthState,
-    setOAuthCookies,
+  generateOAuthState,
+  setOAuthCookies,
 } from "@/app/lib/calendar/oauth-state";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
+    const user = await requireAuth();
     const state = generateOAuthState();
-    await setOAuthCookies("google", state);
+    await setOAuthCookies("google", state, undefined, user.uid);
     const url = getGoogleAuthUrl(state);
     return NextResponse.redirect(url);
   } catch (error) {

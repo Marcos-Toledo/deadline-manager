@@ -16,8 +16,7 @@ const RATE_LIMIT_WINDOW_MS = 60_000;
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 const CACHE_COLLECTION = "datajud_cache";
 
-const PROCESS_NUMBER_REGEX =
-  /^\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}$/;
+const PROCESS_NUMBER_REGEX = /^\d{7}-\d{2}\.\d{4}\.\d\.\d{2}\.\d{4}$/;
 
 const requestTimestamps: number[] = [];
 
@@ -69,13 +68,20 @@ export function validateProcessNumber(numero: string): boolean {
 }
 
 function normalizeProcessNumber(numero: string): string {
-  return numero.trim().replace(/\s/g, "");
+  const digits = numero.trim().replace(/\D/g, "");
+  if (digits.length !== 20) return numero.trim().replace(/\s/g, "");
+  return digits.replace(
+    /^(\d{7})(\d{2})(\d{4})(\d{1})(\d{2})(\d{4})$/,
+    "$1-$2.$3.$4.$5.$6",
+  );
 }
 
 function inferTribunalFromNumber(numero: string): string | null {
   const match = numero.match(/^\d{7}-\d{2}\.\d{4}\.(\d)\.(\d{2})\.\d{4}$/);
   if (!match) return null;
-  const codigoTribunal = match[2];
+  const j = parseInt(match[1], 10);
+  const tt = parseInt(match[2], 10);
+  const codigoTribunal = j === 4 ? String(39 + tt) : String(tt);
   return TRIBUNAL_SIGLAS[codigoTribunal] ?? null;
 }
 
@@ -153,7 +159,11 @@ function extractMetadata(source: DatajudProcesso): ProcessoMetadata {
       documento: parte.documento,
     };
     const tipoParte = (parte.tipoParte ?? "").toLowerCase();
-    if (tipoParte.includes("ativo") || tipoParte.includes("autor") || tipoParte.includes("requerente")) {
+    if (
+      tipoParte.includes("ativo") ||
+      tipoParte.includes("autor") ||
+      tipoParte.includes("requerente")
+    ) {
       poloAtivo.push(entry);
     } else if (
       tipoParte.includes("passivo") ||
@@ -205,17 +215,16 @@ export async function buscarProcesso(
 
   const cached = await getCachedProcesso(normalized);
   if (cached) {
-    console.log(
-      `[datajud] Cache HIT para ${normalized}`,
-    );
+    console.log(`[datajud] Cache HIT para ${normalized}`);
     return cached;
   }
 
+  console.log(`[datajud] normalized="${normalized}" (input="${numero}")`);
   const tribunal = inferTribunalFromNumber(normalized);
   if (!tribunal) {
     throw new DatajudError(
       "INVALID_NUMBER",
-      `Não foi possível inferir o tribunal a partir do número: "${numero}"`,
+      `Não foi possível inferir o tribunal a partir do número: "${numero}" (normalized: "${normalized}")`,
     );
   }
 
@@ -233,14 +242,18 @@ export async function buscarProcesso(
   const startedAt = Date.now();
   let status = 0;
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30_000);
+
   try {
     const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `ApiKey ${DATAJUD_API_KEY}`,
+        Authorization: `APIKey ${DATAJUD_API_KEY}`,
       },
       body,
+      signal: controller.signal,
     });
 
     status = response.status;
@@ -283,14 +296,20 @@ export async function buscarProcesso(
     if (err instanceof DatajudError) throw err;
 
     const latency = Date.now() - startedAt;
+    const isTimeout = (err as Error).name === "AbortError";
+
     console.error(
-      `[datajud] Erro de conexão numero=${normalized} tribunal=${tribunal} latency=${latency}ms`,
+      `[datajud] ${isTimeout ? "Timeout" : "Erro de conexão"} numero=${normalized} tribunal=${tribunal} latency=${latency}ms`,
       err,
     );
 
     throw new DatajudError(
       "CONNECTION_ERROR",
-      `Erro de conexão com a API DATAJUD: ${(err as Error).message}`,
+      isTimeout
+        ? `Timeout: a API DATAJUD não respondeu em 30s`
+        : `Erro de conexão com a API DATAJUD: ${(err as Error).message}`,
     );
+  } finally {
+    clearTimeout(timeoutId);
   }
 }

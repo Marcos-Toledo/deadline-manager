@@ -9,14 +9,30 @@ import {
   updateDeadlineCalendarEvent,
 } from "@/app/lib/calendar";
 import { getCalendarConnections } from "@/app/lib/calendar/connection";
+import { buscarProcesso } from "@/app/lib/datajud";
 import {
   type CalendarProvider,
   type CreateDeadlineInput,
   type Deadline,
   type UpdateDeadlineInput,
 } from "@/app/types";
+import type { ProcessoMetadata } from "@/app/types/processo";
 
 const COLLECTION = "deadlines";
+
+// Consulta Datajud em background: não deve bloquear/falhar a criação do prazo.
+async function fetchDatajud(processNumber: string) {
+  try {
+    buscarProcesso(processNumber).catch((err: Error) => {
+      console.error("[createDeadline] Falha ao consultar Datajud:", err);
+    });
+  } catch (err) {
+    console.error(
+      "[createDeadline] Falha ao iniciar consulta Datajud:",
+      err as Error,
+    );
+  }
+}
 
 function validateDeadlineInput(input: CreateDeadlineInput): string | null {
   if (!input.title?.trim()) return "Título é obrigatório.";
@@ -48,6 +64,18 @@ export async function createDeadline(input: CreateDeadlineInput) {
   };
 
   await deadlineRef.set(deadline);
+
+  // Consulta Datajud em background: não deve bloquear/falhar a criação do prazo.
+  if (input.processNumber) {
+    try {
+      await fetchDatajud(input.processNumber);
+    } catch (err) {
+      console.error(
+        "[createDeadline] Falha ao iniciar consulta Datajud:",
+        err as Error,
+      );
+    }
+  }
 
   const connections = await getCalendarConnections(user.uid);
   const calendarEventIds: Partial<Record<CalendarProvider, string>> = {};
@@ -94,6 +122,17 @@ export async function updateDeadline(id: string, input: UpdateDeadlineInput) {
   };
   await deadlineRef.update(update);
 
+  // Consulta Datajud em background: não deve bloquear/falhar a criação do prazo.
+  if (input.processNumber) {
+    try {
+      await fetchDatajud(input.processNumber);
+    } catch (err) {
+      console.error(
+        "[createDeadline] Falha ao iniciar consulta Datajud:",
+        err as Error,
+      );
+    }
+  }
   const updated = { ...existing, ...update } as Deadline;
 
   const connections = await getCalendarConnections(user.uid);
@@ -194,7 +233,31 @@ export async function getUserDeadlines(): Promise<Deadline[]> {
     .orderBy("date", "asc")
     .get();
 
-  return snapshot.docs.map((doc) => doc.data() as Deadline);
+  const deadlines = snapshot.docs.map((doc) => doc.data() as Deadline);
+
+  const processNumbers = [
+    ...new Set(deadlines.map((d) => d.processNumber).filter(Boolean)),
+  ];
+  const cacheSnapshots = await Promise.all(
+    processNumbers.map((numero) =>
+      adminDb.collection("datajud_cache").doc(numero).get(),
+    ),
+  );
+
+  const cacheByNumber = new Map(
+    cacheSnapshots
+      .filter((doc) => doc.exists)
+      .map((doc) => [
+        doc.id,
+        (doc.data() as { processo?: ProcessoMetadata }).processo,
+      ]),
+  );
+
+  return deadlines.map((deadline) => {
+    const processMetadata = cacheByNumber.get(deadline.processNumber);
+    if (!processMetadata) return deadline;
+    return { ...deadline, processMetadata };
+  });
 }
 
 export async function getDeadlineById(id: string): Promise<Deadline | null> {

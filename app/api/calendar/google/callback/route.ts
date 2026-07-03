@@ -1,6 +1,9 @@
 import { getCurrentUser } from "@/app/lib/auth";
 import { saveCalendarConnection } from "@/app/lib/calendar/connection";
-import { findOrCreateGoogleCalendar, getGoogleTokensFromCode } from "@/app/lib/calendar/google";
+import {
+  findOrCreateGoogleCalendar,
+  getGoogleTokensFromCode,
+} from "@/app/lib/calendar/google";
 import { consumeOAuthCookies } from "@/app/lib/calendar/oauth-state";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -24,7 +27,12 @@ export async function GET(request: NextRequest) {
       throw new Error("Missing OAuth code or state");
     }
 
-    await consumeOAuthCookies("google", state);
+    const { userId } = await consumeOAuthCookies("google", state);
+    if (userId && userId !== user.uid) {
+      throw new Error(
+        "Session mismatch: o usuário que iniciou a conexão é diferente do usuário atual",
+      );
+    }
     const tokens = await getGoogleTokensFromCode(code);
 
     if (!tokens.access_token || !tokens.refresh_token) {
@@ -46,15 +54,15 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.redirect(
-      new URL("/dashboard?calendar_connected=google", request.url)
+      new URL("/dashboard?calendar_connected=google", request.url),
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.redirect(
       new URL(
         `/dashboard?calendar_error=${encodeURIComponent(message)}`,
-        request.url
-      )
+        request.url,
+      ),
     );
   }
 }
