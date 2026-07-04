@@ -2,6 +2,7 @@
 
 import {
   deleteDeadline,
+  refreshProcessMetadata,
   syncDeadlineFromCalendar,
 } from "@/app/actions/deadlines";
 import { useEditDeadline } from "@/app/context/edit-deadline";
@@ -11,7 +12,7 @@ import { formatDateTimeLocal } from "@/app/utils/formatDateTimeLocal";
 import { formatarProcessoCNJ } from "@/app/utils/formatter-process-number";
 import { Pencil, RefreshCw, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 
 const TYPE_LABELS: Record<Deadline["type"], string> = {
   hearing: "Audiência",
@@ -67,6 +68,9 @@ export function DeadlinesList({
 }: DeadlinesListProps) {
   const [deleting, startDelete] = useTransition();
   const [syncing, startSync] = useTransition();
+  const [refreshingProcess, setRefreshingProcess] = useState<string | null>(
+    null,
+  );
   const router = useRouter();
   const {
     setForm = () => {},
@@ -156,25 +160,46 @@ export function DeadlinesList({
                           {deadline.description}
                         </div>
                       </td>
-                      <td>{formatarProcessoCNJ(deadline.processNumber)}</td>
+                      <td>{formatarProcessoCNJ(deadline.processNumber)} </td>
                       <td>
-                        {deadline.processMetadata?.ultimoMovimento ? (
-                          <div>
-                            <div className="text-sm font-medium">
-                              {deadline.processMetadata.ultimoMovimento.nome}
+                        <div className="flex items-center gap-2">
+                          {deadline.processMetadata?.ultimoMovimento ? (
+                            <div>
+                              <div className="text-sm font-medium">
+                                {deadline.processMetadata.ultimoMovimento.nome}
+                              </div>
+                              <div className="text-xs text-base-content/60">
+                                {formatDate(
+                                  deadline.processMetadata.ultimoMovimento
+                                    .dataHora,
+                                )}
+                              </div>
                             </div>
-                            <div className="text-xs text-base-content/60">
-                              {formatDate(
-                                deadline.processMetadata.ultimoMovimento
-                                  .dataHora,
-                              )}
-                            </div>
-                          </div>
-                        ) : (
-                          <span className="text-xs text-base-content/50">
-                            Não disponível
-                          </span>
-                        )}
+                          ) : (
+                            <span className="text-xs text-base-content/50">
+                              Não disponível
+                            </span>
+                          )}
+                          <button
+                            className="btn btn-ghost btn-xs"
+                            disabled={refreshingProcess === deadline.id}
+                            onClick={async () => {
+                              setRefreshingProcess(deadline.id);
+                              await refreshProcessMetadata(deadline.id);
+                              router.refresh();
+                              setRefreshingProcess(null);
+                            }}
+                          >
+                            <RefreshCw
+                              size={16}
+                              className={
+                                refreshingProcess === deadline.id
+                                  ? "animate-spin"
+                                  : ""
+                              }
+                            />
+                          </button>
+                        </div>
                       </td>
                       <td>{TYPE_LABELS[deadline.type]}</td>
                       <td>

@@ -1,3 +1,20 @@
+// Exemplo de body
+// {
+//   "query": {
+//     "term": {
+//       "numeroProcesso.keyword": "12345678920268260000"
+//     }
+//   },
+//   "_source": [
+//     "numeroProcesso",
+//     "classe",
+//     "sistema",
+//     "tribunal",
+//     "movimentos"
+//   ],
+//   "size": 1
+// }
+
 import { adminDb } from "@/app/config/firebase-admin";
 import {
   DatajudCacheEntry,
@@ -134,7 +151,7 @@ async function setCachedProcesso(
 ): Promise<void> {
   try {
     const entry: DatajudCacheEntry = {
-      processo,
+      processo: JSON.parse(JSON.stringify(processo)),
       cachedAt: Date.now(),
       fromCache: true,
     };
@@ -204,46 +221,57 @@ function extractMetadata(source: DatajudProcesso): ProcessoMetadata {
 export async function buscarProcesso(
   numero: string,
 ): Promise<{ processo: ProcessoMetadata; fromCache: boolean }> {
-  const normalized = normalizeProcessNumber(numero);
+  const normalizedNumber = normalizeProcessNumber(numero);
 
-  if (!validateProcessNumber(normalized)) {
+  if (!validateProcessNumber(normalizedNumber)) {
     throw new DatajudError(
       "INVALID_NUMBER",
       `Número de processo inválido: "${numero}". Use o formato CNJ: NNNNNNN-DD.AAAA.J.TT.OOOO`,
     );
   }
 
-  const cached = await getCachedProcesso(normalized);
+  const cached = await getCachedProcesso(normalizedNumber);
   if (cached) {
-    console.log(`[datajud] Cache HIT para ${normalized}`);
+    console.log(`[datajud] Cache HIT para ${normalizedNumber}`);
     return cached;
   }
 
-  console.log(`[datajud] normalized="${normalized}" (input="${numero}")`);
-  const tribunal = inferTribunalFromNumber(normalized);
+  console.log(
+    `[datajud] normalizedNumber="${normalizedNumber}" (input="${numero}")`,
+  );
+  const tribunal = inferTribunalFromNumber(normalizedNumber);
   if (!tribunal) {
     throw new DatajudError(
       "INVALID_NUMBER",
-      `Não foi possível inferir o tribunal a partir do número: "${numero}" (normalized: "${normalized}")`,
+      `Não foi possível inferir o tribunal a partir do número: "${numero}" (normalizedNumber: "${normalizedNumber}")`,
     );
   }
 
   checkRateLimit();
 
   const url = `${DATAJUD_BASE_URL}/api_publica_${tribunal}/_search`;
+
+  console.log("=================================");
+  console.log(`[datajud] URL: ${url}`);
+  console.log(`[datajud] numero Processo: ${normalizedNumber}`);
+  console.log(`[datajud] number: ${numero}`);
+  console.log("=================================");
+
   const body = JSON.stringify({
     query: {
-      match: {
-        numeroProcesso: normalized,
+      term: {
+        "numeroProcesso.keyword": numero,
       },
     },
+    _source: ["numeroProcesso", "movimentos"],
+    size: 1,
   });
 
   const startedAt = Date.now();
   let status = 0;
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30_000);
+  const timeoutId = setTimeout(() => controller.abort(), 50000);
 
   try {
     const response = await fetch(url, {
@@ -260,13 +288,13 @@ export async function buscarProcesso(
     const latency = Date.now() - startedAt;
 
     console.log(
-      `[datajud] numero=${normalized} tribunal=${tribunal} status=${status} latency=${latency}ms`,
+      `[datajud] numero=${normalizedNumber} tribunal=${tribunal} status=${status} latency=${latency}ms`,
     );
 
     if (status === 404) {
       throw new DatajudError(
         "NOT_FOUND",
-        `Processo não encontrado: ${normalized}`,
+        `Processo não encontrado: ${normalizedNumber}`,
       );
     }
 
@@ -282,14 +310,14 @@ export async function buscarProcesso(
     if (!data.hits?.hits?.length) {
       throw new DatajudError(
         "NOT_FOUND",
-        `Processo não encontrado: ${normalized}`,
+        `Processo não encontrado: ${normalizedNumber}`,
       );
     }
 
     const source = data.hits.hits[0]._source;
     const processo = extractMetadata(source);
 
-    await setCachedProcesso(normalized, processo);
+    await setCachedProcesso(normalizedNumber, processo);
 
     return { processo, fromCache: false };
   } catch (err) {
@@ -299,7 +327,7 @@ export async function buscarProcesso(
     const isTimeout = (err as Error).name === "AbortError";
 
     console.error(
-      `[datajud] ${isTimeout ? "Timeout" : "Erro de conexão"} numero=${normalized} tribunal=${tribunal} latency=${latency}ms`,
+      `[datajud] ${isTimeout ? "Timeout" : "Erro de conexão"} numero=${normalizedNumber} tribunal=${tribunal} latency=${latency}ms`,
       err,
     );
 

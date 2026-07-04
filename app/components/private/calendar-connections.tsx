@@ -82,6 +82,7 @@ export function CalendarConnections({
                   alt={`${PROVIDER_LABELS[provider]} icon`}
                   width={72}
                   height={72}
+                  loading="eager"
                   className="absolute top-1/2 right-0 transform -translate-y-1/2 z-0 opacity-50 rotate-20"
                 />
                 <div className="flex items-center gap-3 relative z-10">

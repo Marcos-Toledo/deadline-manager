@@ -21,7 +21,7 @@ import type { ProcessoMetadata } from "@/app/types/processo";
 const COLLECTION = "deadlines";
 
 // Consulta Datajud em background: não deve bloquear/falhar a criação do prazo.
-async function fetchDatajud(processNumber: string) {
+export async function fetchDatajud(processNumber: string) {
   try {
     buscarProcesso(processNumber).catch((err: Error) => {
       console.error("[createDeadline] Falha ao consultar Datajud:", err);
@@ -269,4 +269,37 @@ export async function getDeadlineById(id: string): Promise<Deadline | null> {
   if (deadline.userId !== user.uid) return null;
 
   return deadline;
+}
+
+export async function refreshProcessMetadata(
+  deadlineId: string,
+): Promise<{ success: boolean; error?: string }> {
+  const user = await requireAuth();
+  const snapshot = await adminDb.collection(COLLECTION).doc(deadlineId).get();
+  if (!snapshot.exists)
+    return { success: false, error: "Prazo não encontrado" };
+
+  const deadline = snapshot.data() as Deadline;
+  if (deadline.userId !== user.uid) {
+    return { success: false, error: "Não autorizado" };
+  }
+
+  if (!deadline.processNumber) {
+    return { success: false, error: "Prazo sem número de processo" };
+  }
+
+  try {
+    const { processo } = await buscarProcesso(deadline.processNumber);
+    const cleanProcesso = JSON.parse(JSON.stringify(processo));
+    await adminDb.collection(COLLECTION).doc(deadlineId).update({
+      processMetadata: cleanProcesso,
+      updatedAt: new Date().toISOString(),
+    });
+    return { success: true };
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : "Erro ao buscar processo";
+    console.error("[refreshProcessMetadata] Erro:", err);
+    return { success: false, error: message };
+  }
 }
