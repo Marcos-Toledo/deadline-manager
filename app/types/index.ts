@@ -24,6 +24,7 @@ export interface Deadline {
   updatedAt: string;
   calendarEventIds?: Partial<Record<CalendarProvider, string>>;
   processMetadata?: ProcessoMetadata;
+  hasProcessCache?: boolean;
 }
 
 export interface CalendarConnection {

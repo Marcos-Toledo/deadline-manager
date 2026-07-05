@@ -13,6 +13,7 @@ import { formatarProcessoCNJ } from "@/app/utils/formatter-process-number";
 import { Pencil, RefreshCw, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
+import { ProcessProfile } from "./process-profile";
 
 const TYPE_LABELS: Record<Deadline["type"], string> = {
   hearing: "Audiência",
@@ -71,6 +72,9 @@ export function DeadlinesList({
   const [refreshingProcess, setRefreshingProcess] = useState<string | null>(
     null,
   );
+  const [selectedProcessNumber, setSelectedProcessNumber] = useState<
+    string | null
+  >(null);
   const router = useRouter();
   const {
     setForm = () => {},
@@ -160,7 +164,23 @@ export function DeadlinesList({
                           {deadline.description}
                         </div>
                       </td>
-                      <td>{formatarProcessoCNJ(deadline.processNumber)} </td>
+                      <td>
+                        {deadline.hasProcessCache ? (
+                          <button
+                            type="button"
+                            className="link link-primary text-sm"
+                            onClick={() =>
+                              setSelectedProcessNumber(deadline.processNumber)
+                            }
+                          >
+                            {formatarProcessoCNJ(deadline.processNumber)}
+                          </button>
+                        ) : (
+                          <span className="text-sm">
+                            {formatarProcessoCNJ(deadline.processNumber)}
+                          </span>
+                        )}
+                      </td>
                       <td>
                         <div className="flex items-center gap-2">
                           {deadline.processMetadata?.ultimoMovimento ? (
@@ -294,6 +314,14 @@ export function DeadlinesList({
           </div>
         )}
       </div>
+
+      {selectedProcessNumber && (
+        <ProcessProfile
+          key={selectedProcessNumber}
+          processNumber={selectedProcessNumber}
+          onClose={() => setSelectedProcessNumber(null)}
+        />
+      )}
     </div>
   );
 }

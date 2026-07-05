@@ -112,6 +112,7 @@ export interface ProcessoMetadata {
 
 export interface DatajudCacheEntry {
   processo: ProcessoMetadata;
+  rawData?: DatajudProcesso;
   cachedAt: number;
   fromCache: true;
 }

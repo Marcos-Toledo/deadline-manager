@@ -16,7 +16,11 @@ import {
   type Deadline,
   type UpdateDeadlineInput,
 } from "@/app/types";
-import type { ProcessoMetadata } from "@/app/types/processo";
+import type {
+  DatajudCacheEntry,
+  DatajudProcesso,
+  ProcessoMetadata,
+} from "@/app/types/processo";
 
 const COLLECTION = "deadlines";
 
@@ -57,7 +61,7 @@ export async function createDeadline(input: CreateDeadlineInput) {
     description: input.description.trim(),
     date: input.date,
     type: input.type,
-    processNumber: input.processNumber.trim(),
+    processNumber: input.processNumber.replace(/\D/g, ""),
     status: "pending",
     createdAt: now,
     updatedAt: now,
@@ -118,6 +122,7 @@ export async function updateDeadline(id: string, input: UpdateDeadlineInput) {
 
   const update: Partial<Deadline> = {
     ...input,
+    processNumber: input.processNumber?.replace(/\D/g, ""),
     updatedAt: new Date().toISOString(),
   };
   await deadlineRef.update(update);
@@ -253,11 +258,43 @@ export async function getUserDeadlines(): Promise<Deadline[]> {
       ]),
   );
 
+  const cacheExistsByNumber = new Map(
+    cacheSnapshots.map((doc) => [doc.id, doc.exists]),
+  );
+
   return deadlines.map((deadline) => {
-    const processMetadata = cacheByNumber.get(deadline.processNumber);
-    if (!processMetadata) return deadline;
-    return { ...deadline, processMetadata };
+    const normalizedNumber = deadline.processNumber.replace(/\D/g, "");
+    const processMetadata = cacheByNumber.get(normalizedNumber);
+    const hasProcessCache = cacheExistsByNumber.get(normalizedNumber) ?? false;
+    return { ...deadline, processMetadata, hasProcessCache };
   });
+}
+
+export async function getCachedProcessoByNumber(
+  processNumber: string,
+): Promise<{ processo: ProcessoMetadata; rawData: DatajudProcesso } | null> {
+  const user = await requireAuth();
+  if (!user) return null;
+
+  const normalizedNumber = processNumber.replace(/\D/g, "");
+  try {
+    const doc = await adminDb
+      .collection("datajud_cache")
+      .doc(normalizedNumber)
+      .get();
+    if (!doc.exists) return null;
+
+    const data = doc.data() as DatajudCacheEntry;
+    if (!data.processo || !data.rawData) return null;
+
+    return {
+      processo: JSON.parse(JSON.stringify(data.processo)),
+      rawData: JSON.parse(JSON.stringify(data.rawData)),
+    };
+  } catch (err) {
+    console.error("[getCachedProcessoByNumber] Erro ao ler cache:", err);
+    return null;
+  }
 }
 
 export async function getDeadlineById(id: string): Promise<Deadline | null> {

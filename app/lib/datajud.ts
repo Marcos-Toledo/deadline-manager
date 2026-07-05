@@ -1,4 +1,4 @@
-// Exemplo de body
+// Exemplo de body (_source)
 // {
 //   "query": {
 //     "term": {
@@ -148,10 +148,12 @@ async function getCachedProcesso(
 async function setCachedProcesso(
   numeroNormalizado: string,
   processo: ProcessoMetadata,
+  source: DatajudProcesso,
 ): Promise<void> {
   try {
     const entry: DatajudCacheEntry = {
       processo: JSON.parse(JSON.stringify(processo)),
+      rawData: JSON.parse(JSON.stringify(source)),
       cachedAt: Date.now(),
       fromCache: true,
     };
@@ -263,7 +265,6 @@ export async function buscarProcesso(
         "numeroProcesso.keyword": numero,
       },
     },
-    _source: ["numeroProcesso", "movimentos"],
     size: 1,
   });
 
@@ -317,7 +318,11 @@ export async function buscarProcesso(
     const source = data.hits.hits[0]._source;
     const processo = extractMetadata(source);
 
-    await setCachedProcesso(normalizedNumber, processo);
+    await setCachedProcesso(
+      normalizedNumber.replace(/\D/g, ""),
+      processo,
+      source,
+    );
 
     return { processo, fromCache: false };
   } catch (err) {
