@@ -222,6 +222,7 @@ function extractMetadata(source: DatajudProcesso): ProcessoMetadata {
 
 export async function buscarProcesso(
   numero: string,
+  force = false,
 ): Promise<{ processo: ProcessoMetadata; fromCache: boolean }> {
   const normalizedNumber = normalizeProcessNumber(numero);
 
@@ -232,7 +233,7 @@ export async function buscarProcesso(
     );
   }
 
-  const cached = await getCachedProcesso(normalizedNumber);
+  const cached = force ? null : await getCachedProcesso(normalizedNumber);
   if (cached) {
     console.log(`[datajud] Cache HIT para ${normalizedNumber}`);
     return cached;

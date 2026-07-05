@@ -310,7 +310,8 @@ export async function getDeadlineById(id: string): Promise<Deadline | null> {
 
 export async function refreshProcessMetadata(
   deadlineId: string,
-): Promise<{ success: boolean; error?: string }> {
+  force = false,
+): Promise<{ success: boolean; error?: string; fromCache?: boolean }> {
   const user = await requireAuth();
   const snapshot = await adminDb.collection(COLLECTION).doc(deadlineId).get();
   if (!snapshot.exists)
@@ -326,13 +327,16 @@ export async function refreshProcessMetadata(
   }
 
   try {
-    const { processo } = await buscarProcesso(deadline.processNumber);
+    const { processo, fromCache } = await buscarProcesso(
+      deadline.processNumber,
+      force,
+    );
     const cleanProcesso = JSON.parse(JSON.stringify(processo));
     await adminDb.collection(COLLECTION).doc(deadlineId).update({
       processMetadata: cleanProcesso,
       updatedAt: new Date().toISOString(),
     });
-    return { success: true };
+    return { success: true, fromCache };
   } catch (err) {
     const message =
       err instanceof Error ? err.message : "Erro ao buscar processo";

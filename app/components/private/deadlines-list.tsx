@@ -1,9 +1,9 @@
 "use client";
 
 import {
-  deleteDeadline,
-  refreshProcessMetadata,
-  syncDeadlineFromCalendar,
+    deleteDeadline,
+    refreshProcessMetadata,
+    syncDeadlineFromCalendar,
 } from "@/app/actions/deadlines";
 import { useEditDeadline } from "@/app/context/edit-deadline";
 import { compareDeadlineWithCalendarEvent } from "@/app/lib/calendar/compare";
@@ -72,6 +72,11 @@ export function DeadlinesList({
   const [refreshingProcess, setRefreshingProcess] = useState<string | null>(
     null,
   );
+  const [refreshMessage, setRefreshMessage] = useState<{
+    id: string;
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
   const [selectedProcessNumber, setSelectedProcessNumber] = useState<
     string | null
   >(null);
@@ -201,11 +206,31 @@ export function DeadlinesList({
                             </span>
                           )}
                           <button
-                            className="btn btn-ghost btn-xs"
+                            className="btn btn-ghost btn-xs tooltip"
+                            data-tip="Atualizar andamentos agora (ignora cache)"
                             disabled={refreshingProcess === deadline.id}
                             onClick={async () => {
                               setRefreshingProcess(deadline.id);
-                              await refreshProcessMetadata(deadline.id);
+                              setRefreshMessage(null);
+                              const result = await refreshProcessMetadata(
+                                deadline.id,
+                                true,
+                              );
+                              if (result.success) {
+                                setRefreshMessage({
+                                  id: deadline.id,
+                                  type: "success",
+                                  message: result.fromCache
+                                    ? "Dados já estavam atualizados"
+                                    : "Andamentos atualizados",
+                                });
+                              } else {
+                                setRefreshMessage({
+                                  id: deadline.id,
+                                  type: "error",
+                                  message: result.error ?? "Erro ao atualizar",
+                                });
+                              }
                               router.refresh();
                               setRefreshingProcess(null);
                             }}
@@ -219,6 +244,17 @@ export function DeadlinesList({
                               }
                             />
                           </button>
+                          {refreshMessage?.id === deadline.id && (
+                            <div
+                              className={`text-xs mt-1 ${
+                                refreshMessage.type === "success"
+                                  ? "text-success"
+                                  : "text-error"
+                              }`}
+                            >
+                              {refreshMessage.message}
+                            </div>
+                          )}
                         </div>
                       </td>
                       <td>{TYPE_LABELS[deadline.type]}</td>
