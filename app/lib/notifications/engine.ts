@@ -1,12 +1,11 @@
 import { adminDb } from "@/app/config/firebase-admin";
 import {
-  type Deadline,
-  type InAppNotification,
-  type NotificationChannel,
-  type NotificationLog,
-  type NotificationPreferences,
-  type User,
-  DEFAULT_NOTIFICATION_PREFERENCES,
+    type Deadline,
+    type InAppNotification,
+    type NotificationChannel,
+    type NotificationLog,
+    type User,
+    DEFAULT_NOTIFICATION_PREFERENCES,
 } from "@/app/types";
 import { sendEmailNotification } from "./email";
 import { sendPushNotification } from "./push";
@@ -17,81 +16,25 @@ const DEADLINES_COLLECTION = "deadlines";
 const IN_APP_NOTIFICATIONS_COLLECTION = "inAppNotifications";
 const NOTIFICATION_LOGS_COLLECTION = "notificationLogs";
 
-export function getCurrentTimeInTimezone(timezone: string): {
-  hour: number;
-  minute: number;
-  date: string;
-} {
-  const now = new Date();
-  const formatter = new Intl.DateTimeFormat("en-US", {
-    timeZone: timezone,
-    hour: "numeric",
-    minute: "numeric",
-    hour12: false,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  });
-  const parts = formatter.formatToParts(now);
-  const getPart = (type: string) =>
-    parts.find((part) => part.type === type)?.value ?? "";
-  return {
-    hour: parseInt(getPart("hour"), 10),
-    minute: parseInt(getPart("minute"), 10),
-    date: `${getPart("year")}-${getPart("month")}-${getPart("day")}`,
-  };
-}
-
-export function parsePreferredTime(time: string): {
-  hour: number;
-  minute: number;
-} {
-  const [hour, minute] = time.split(":").map(Number);
-  return { hour, minute };
-}
-
-export function timeToMinutes(time: string): number {
-  const { hour, minute } = parsePreferredTime(time);
-  return hour * 60 + minute;
-}
-
-export function shouldProcessUser(
-  preferences: NotificationPreferences,
-): boolean {
-  if (!preferences.enabled) return false;
-  const { hour, minute } = getCurrentTimeInTimezone(preferences.timezone);
-  const currentMinutes = hour * 60 + minute;
-  const preferredMinutes = timeToMinutes(preferences.time);
-  // Check if the preferred time is within the last 60 minutes (circular,
-  // so it also works across midnight). The cron runs every hour at minute 0.
-  const diff = (currentMinutes - preferredMinutes + 1440) % 1440;
-  return diff >= 0 && diff <= 60;
-}
-
 export function calculateDaysUntilDeadline(
   date: string,
   timezone: string,
 ): number {
-  const deadline = new Date(date);
   const now = new Date();
-
-  const deadlineLocal = new Date(
-    deadline.toLocaleString("en-US", { timeZone: timezone }),
-  );
   const nowLocal = new Date(
     now.toLocaleString("en-US", { timeZone: timezone }),
-  );
-
-  const deadlineDay = Date.UTC(
-    deadlineLocal.getFullYear(),
-    deadlineLocal.getMonth(),
-    deadlineLocal.getDate(),
   );
   const nowDay = Date.UTC(
     nowLocal.getFullYear(),
     nowLocal.getMonth(),
     nowLocal.getDate(),
   );
+
+  // Parse the date string as local midnight to avoid UTC off-by-one.
+  // Handles both "YYYY-MM-DD" and full ISO strings.
+  const datePart = date.slice(0, 10);
+  const [year, month, day] = datePart.split("-").map(Number);
+  const deadlineDay = Date.UTC(year, month - 1, day);
 
   return Math.floor((deadlineDay - nowDay) / (1000 * 60 * 60 * 24));
 }
@@ -294,10 +237,6 @@ export async function runNotificationEngine(): Promise<{
 
   for (const doc of usersSnapshot.docs) {
     const user = { uid: doc.id, ...doc.data() } as User;
-    const preferences =
-      user.notificationPreferences ?? DEFAULT_NOTIFICATION_PREFERENCES;
-    if (!shouldProcessUser(preferences)) continue;
-
     processed++;
     const count = await processNotificationsForUser(user.uid);
     created += count;

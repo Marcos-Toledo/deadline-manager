@@ -23,14 +23,14 @@ const CHANNEL_LABELS: Record<NotificationChannel, string> = {
 
 const AVAILABLE_WINDOWS = [7, 3, 1];
 
-const TIMEZONES = [
-  "America/Sao_Paulo",
-  "America/Manaus",
-  "America/Recife",
-  "America/Cuiaba",
-  "America/Boa_Vista",
-  "America/Noronha",
-];
+// const TIMEZONES = [
+//   "America/Sao_Paulo",
+//   "America/Manaus",
+//   "America/Recife",
+//   "America/Cuiaba",
+//   "America/Boa_Vista",
+//   "America/Noronha",
+// ];
 
 interface NotificationPreferencesPanelProps {
   phoneNumber?: string;
@@ -152,7 +152,7 @@ export function NotificationPreferencesPanel({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="label">Horário dos alertas</label>
                 <input
@@ -180,7 +180,7 @@ export function NotificationPreferencesPanel({
                   ))}
                 </select>
               </div>
-            </div>
+            </div> */}
 
             <div>
               <label className="label">Canais de envio</label>

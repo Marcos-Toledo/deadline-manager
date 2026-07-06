@@ -3,13 +3,13 @@
 import { adminDb } from "@/app/config/firebase-admin";
 import { requireAuth } from "@/app/lib/auth";
 import {
-  removePushSubscription,
-  savePushSubscription,
+    removePushSubscription,
+    savePushSubscription,
 } from "@/app/lib/notifications/push";
 import {
-  type InAppNotification,
-  type NotificationPreferences,
-  DEFAULT_NOTIFICATION_PREFERENCES,
+    type InAppNotification,
+    type NotificationPreferences,
+    DEFAULT_NOTIFICATION_PREFERENCES,
 } from "@/app/types";
 import type { PushSubscription } from "web-push";
 
@@ -28,7 +28,7 @@ function sanitizePreferences(
     enabled: typeof input.enabled === "boolean" ? input.enabled : true,
     windows: Array.isArray(input.windows)
       ? input.windows.filter((w) => [1, 3, 7].includes(w)).sort((a, b) => a - b)
-      : [7, 3, 1],
+      : [1, 3, 7],
     channels: {
       "in-app":
         typeof channels["in-app"] === "boolean" ? channels["in-app"] : true,
