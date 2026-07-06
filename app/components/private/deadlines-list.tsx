@@ -1,9 +1,9 @@
 "use client";
 
 import {
-    deleteDeadline,
-    refreshProcessMetadata,
-    syncDeadlineFromCalendar,
+  deleteDeadline,
+  refreshProcessMetadata,
+  syncDeadlineFromCalendar,
 } from "@/app/actions/deadlines";
 import { useEditDeadline } from "@/app/context/edit-deadline";
 import { compareDeadlineWithCalendarEvent } from "@/app/lib/calendar/compare";
@@ -12,7 +12,7 @@ import { formatDateTimeLocal } from "@/app/utils/formatDateTimeLocal";
 import { formatarProcessoCNJ } from "@/app/utils/formatter-process-number";
 import { Pencil, RefreshCw, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { ProcessProfile } from "./process-profile";
 
 const TYPE_LABELS: Record<Deadline["type"], string> = {
@@ -68,7 +68,8 @@ export function DeadlinesList({
   calendarEvents,
 }: DeadlinesListProps) {
   const [deleting, startDelete] = useTransition();
-  const [syncing, startSync] = useTransition();
+  const [, startSync] = useTransition();
+  const [syncingId, setSyncingId] = useState<string | null>(null);
   const [refreshingProcess, setRefreshingProcess] = useState<string | null>(
     null,
   );
@@ -81,6 +82,13 @@ export function DeadlinesList({
     string | null
   >(null);
   const router = useRouter();
+
+  useEffect(() => {
+    if (!refreshMessage) return;
+    const timeout = setTimeout(() => setRefreshMessage(null), 3000);
+    return () => clearTimeout(timeout);
+  }, [refreshMessage]);
+
   const {
     setForm = () => {},
     setIsEditing = () => {},
@@ -108,11 +116,13 @@ export function DeadlinesList({
   };
 
   const handleSync = (id: string) => {
+    setSyncingId(id);
     startSync(async () => {
       const result = await syncDeadlineFromCalendar(id);
       if (result.success) {
         router.refresh();
       }
+      setSyncingId(null);
     });
   };
 
@@ -306,12 +316,18 @@ export function DeadlinesList({
                         <div className="flex items-center gap-1">
                           {differences && (
                             <button
-                              className="btn btn-ghost btn-xs text-warning"
+                              className="btn btn-ghost btn-xs text-warning tooltip"
+                              data-tip={`Sincronizar com calendário (${formatDifferences(differences)})`}
                               onClick={() => handleSync(deadline.id)}
-                              disabled={syncing}
-                              title={`Sincronizar com calendário (${formatDifferences(differences)})`}
+                              disabled={syncingId === deadline.id}
                             >
-                              <RefreshCw className="w-4 h-4" />
+                              <RefreshCw
+                                className={`w-4 h-4 ${
+                                  syncingId === deadline.id
+                                    ? "animate-spin"
+                                    : ""
+                                }`}
+                              />
                             </button>
                           )}
                           <button
