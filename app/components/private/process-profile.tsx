@@ -1,8 +1,8 @@
 "use client";
 
-import { getCachedProcessoByNumber } from "@/app/actions/deadlines";
-import type { DatajudProcesso, ProcessoMetadata } from "@/app/types/processo";
-import { formatarProcessoCNJ } from "@/app/utils/formatter-process-number";
+import { getCachedProcessoByNumber } from "@/actions/deadlines";
+import type { DatajudProcesso, ProcessoMetadata } from "@/types/processo";
+import { formatarProcessoCNJ } from "@/utils/formatter-process-number";
 import { X } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 

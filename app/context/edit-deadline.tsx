@@ -1,15 +1,15 @@
 "use client";
 
-import { createDeadline, updateDeadline } from "@/app/actions/deadlines";
-import { type CreateDeadlineInput, type DeadlineType } from "@/app/types";
+import { createDeadline, updateDeadline } from "@/actions/deadlines";
+import { type CreateDeadlineInput, type DeadlineType } from "@/types";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
-  createContext,
-  useContext,
-  useRef,
-  useState,
-  useTransition,
+    createContext,
+    useContext,
+    useRef,
+    useState,
+    useTransition,
 } from "react";
 import { formatarProcessoCNJ } from "../utils/formatter-process-number";
 

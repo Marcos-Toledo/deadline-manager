@@ -1,5 +1,5 @@
-import { adminDb } from "@/app/config/firebase-admin";
-import type { Deadline, NotificationLog } from "@/app/types";
+import { adminDb } from "@/config/firebase-admin";
+import type { Deadline, NotificationLog } from "@/types";
 import type { PushSubscription } from "web-push";
 import { sendNotification, setVapidDetails } from "web-push";
 

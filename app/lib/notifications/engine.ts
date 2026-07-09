@@ -1,4 +1,4 @@
-import { adminDb } from "@/app/config/firebase-admin";
+import { adminDb } from "@/config/firebase-admin";
 import {
     type Deadline,
     type InAppNotification,
@@ -6,7 +6,7 @@ import {
     type NotificationLog,
     type User,
     DEFAULT_NOTIFICATION_PREFERENCES,
-} from "@/app/types";
+} from "@/types";
 import { sendEmailNotification } from "./email";
 import { sendPushNotification } from "./push";
 import { sendSmsNotification, sendWhatsAppNotification } from "./sms";

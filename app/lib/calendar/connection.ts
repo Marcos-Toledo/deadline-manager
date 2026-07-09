@@ -1,9 +1,9 @@
-import { adminDb } from "@/app/config/firebase-admin";
+import { adminDb } from "@/config/firebase-admin";
 import {
     APP_CALENDAR_NAME,
     type CalendarConnection,
     type CalendarProvider,
-} from "@/app/types";
+} from "@/types";
 
 const COLLECTION = "calendarConnections";
 

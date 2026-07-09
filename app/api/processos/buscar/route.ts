@@ -1,5 +1,5 @@
-import { buscarProcesso } from "@/app/lib/datajud";
-import { DatajudError } from "@/app/types/processo";
+import { buscarProcesso } from "@/lib/datajud";
+import { DatajudError } from "@/types/processo";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";

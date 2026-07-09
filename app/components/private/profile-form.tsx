@@ -1,7 +1,7 @@
 "use client";
 
-import { updateUserProfile } from "@/app/actions/profile";
-import type { User } from "@/app/types";
+import { updateUserProfile } from "@/actions/profile";
+import type { User } from "@/types";
 import { Loader2, Save, UserCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";

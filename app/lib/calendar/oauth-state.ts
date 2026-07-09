@@ -1,4 +1,4 @@
-import type { CalendarProvider } from "@/app/types";
+import type { CalendarProvider } from "@/types";
 import { createHash, randomBytes } from "crypto";
 import { cookies } from "next/headers";
 

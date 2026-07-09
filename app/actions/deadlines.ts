@@ -1,26 +1,26 @@
 "use server";
 
-import { adminDb } from "@/app/config/firebase-admin";
-import { requireAuth } from "@/app/lib/auth";
+import { adminDb } from "@/config/firebase-admin";
+import { requireAuth } from "@/lib/auth";
 import {
-  deleteDeadlineCalendarEvent,
-  findDivergentCalendarEvent,
-  syncDeadlineToCalendar,
-  updateDeadlineCalendarEvent,
-} from "@/app/lib/calendar";
-import { getCalendarConnections } from "@/app/lib/calendar/connection";
-import { buscarProcesso } from "@/app/lib/datajud";
+    deleteDeadlineCalendarEvent,
+    findDivergentCalendarEvent,
+    syncDeadlineToCalendar,
+    updateDeadlineCalendarEvent,
+} from "@/lib/calendar";
+import { getCalendarConnections } from "@/lib/calendar/connection";
+import { buscarProcesso } from "@/lib/datajud";
 import {
-  type CalendarProvider,
-  type CreateDeadlineInput,
-  type Deadline,
-  type UpdateDeadlineInput,
-} from "@/app/types";
+    type CalendarProvider,
+    type CreateDeadlineInput,
+    type Deadline,
+    type UpdateDeadlineInput,
+} from "@/types";
 import type {
-  DatajudCacheEntry,
-  DatajudProcesso,
-  ProcessoMetadata,
-} from "@/app/types/processo";
+    DatajudCacheEntry,
+    DatajudProcesso,
+    ProcessoMetadata,
+} from "@/types/processo";
 
 const COLLECTION = "deadlines";
 

@@ -1,13 +1,13 @@
 "use client";
 
 import {
-  getUserNotificationPreferences,
-  updateUserNotificationPreferences,
-} from "@/app/actions/notifications";
+    getUserNotificationPreferences,
+    updateUserNotificationPreferences,
+} from "@/actions/notifications";
 import {
-  type NotificationChannel,
-  type NotificationPreferences,
-} from "@/app/types";
+    type NotificationChannel,
+    type NotificationPreferences,
+} from "@/types";
 import { Bell, Loader2, Save } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";

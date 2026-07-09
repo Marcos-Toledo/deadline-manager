@@ -1,30 +1,30 @@
 import {
-  type CalendarConnection,
-  type CalendarEvent,
-  type CalendarProvider,
-  type Deadline,
-} from "@/app/types";
+    type CalendarConnection,
+    type CalendarEvent,
+    type CalendarProvider,
+    type Deadline,
+} from "@/types";
 import { compareDeadlineWithCalendarEvent } from "./compare";
 import {
-  getCalendarConnection,
-  getCalendarConnections,
-  saveCalendarConnection,
+    getCalendarConnection,
+    getCalendarConnections,
+    saveCalendarConnection,
 } from "./connection";
 import {
-  createGoogleEvent,
-  deleteGoogleEvent,
-  findGoogleEventByDeadlineId,
-  listGoogleAppEvents,
-  refreshGoogleToken,
-  updateGoogleEvent,
+    createGoogleEvent,
+    deleteGoogleEvent,
+    findGoogleEventByDeadlineId,
+    listGoogleAppEvents,
+    refreshGoogleToken,
+    updateGoogleEvent,
 } from "./google";
 import {
-  createOutlookEvent,
-  deleteOutlookEvent,
-  findOutlookEventByDeadlineId,
-  listOutlookAppEvents,
-  refreshMicrosoftToken,
-  updateOutlookEvent,
+    createOutlookEvent,
+    deleteOutlookEvent,
+    findOutlookEventByDeadlineId,
+    listOutlookAppEvents,
+    refreshMicrosoftToken,
+    updateOutlookEvent,
 } from "./outlook";
 
 async function refreshIfNeeded(

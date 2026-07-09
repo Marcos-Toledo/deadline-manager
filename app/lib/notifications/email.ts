@@ -1,5 +1,5 @@
-import { adminDb } from "@/app/config/firebase-admin";
-import type { Deadline, NotificationLog, User } from "@/app/types";
+import { adminDb } from "@/config/firebase-admin";
+import type { Deadline, NotificationLog, User } from "@/types";
 import { createTransport, type TransportOptions } from "nodemailer";
 
 const USERS_COLLECTION = "users";

@@ -1,6 +1,6 @@
 "use client";
 
-import type { CalendarEvent, CalendarProvider } from "@/app/types";
+import type { CalendarEvent, CalendarProvider } from "@/types";
 import { Calendar } from "lucide-react";
 
 const PROVIDER_LABELS: Record<CalendarProvider, string> = {

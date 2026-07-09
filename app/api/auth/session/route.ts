@@ -1,4 +1,4 @@
-import { adminAuth } from "@/app/config/firebase-admin";
+import { adminAuth } from "@/config/firebase-admin";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {

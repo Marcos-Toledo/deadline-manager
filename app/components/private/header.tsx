@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/app/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
 import { Clock, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";

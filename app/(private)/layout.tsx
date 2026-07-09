@@ -1,5 +1,5 @@
-import { Loading } from "@/app/components/loading";
-import { Header } from "@/app/components/private/header";
+import { Loading } from "@/components/loading";
+import { Header } from "@/components/private/header";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";

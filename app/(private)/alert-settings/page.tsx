@@ -1,5 +1,5 @@
-import { getUserProfile } from "@/app/actions/profile";
-import { NotificationPreferencesPanel } from "@/app/components/private/notification-preferences";
+import { getUserProfile } from "@/actions/profile";
+import { NotificationPreferencesPanel } from "@/components/private/notification-preferences";
 import Link from "next/link";
 
 export default async function AlertSettingsPage() {

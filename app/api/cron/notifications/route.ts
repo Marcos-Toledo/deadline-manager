@@ -1,4 +1,4 @@
-import { runNotificationEngine } from "@/app/lib/notifications/engine";
+import { runNotificationEngine } from "@/lib/notifications/engine";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";

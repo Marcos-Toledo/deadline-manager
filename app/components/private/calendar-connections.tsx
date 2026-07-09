@@ -1,7 +1,7 @@
 "use client";
 
-import { disconnectCalendar } from "@/app/actions/calendar";
-import type { CalendarProvider } from "@/app/types";
+import { disconnectCalendar } from "@/actions/calendar";
+import type { CalendarProvider } from "@/types";
 import { Calendar, CheckCircle, Loader2, XCircle } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";

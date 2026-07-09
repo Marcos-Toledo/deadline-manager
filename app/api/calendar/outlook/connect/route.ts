@@ -1,11 +1,11 @@
-import { requireAuth } from "@/app/lib/auth";
+import { requireAuth } from "@/lib/auth";
 import {
-  generateCodeChallenge,
-  generateCodeVerifier,
-  generateOAuthState,
-  setOAuthCookies,
-} from "@/app/lib/calendar/oauth-state";
-import { getMicrosoftAuthUrl } from "@/app/lib/calendar/outlook";
+    generateCodeChallenge,
+    generateCodeVerifier,
+    generateOAuthState,
+    setOAuthCookies,
+} from "@/lib/calendar/oauth-state";
+import { getMicrosoftAuthUrl } from "@/lib/calendar/outlook";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {

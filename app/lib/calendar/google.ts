@@ -5,7 +5,7 @@ import {
     APP_SOURCE_PROPERTY,
     type CalendarEvent,
     type Deadline,
-} from "@/app/types";
+} from "@/types";
 import { calendar_v3, google } from "googleapis";
 
 const SCOPES = ["https://www.googleapis.com/auth/calendar"];

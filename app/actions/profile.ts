@@ -1,8 +1,8 @@
 "use server";
 
-import { adminAuth, adminDb } from "@/app/config/firebase-admin";
-import { requireAuth } from "@/app/lib/auth";
-import type { User } from "@/app/types";
+import { adminAuth, adminDb } from "@/config/firebase-admin";
+import { requireAuth } from "@/lib/auth";
+import type { User } from "@/types";
 
 const USERS_COLLECTION = "users";
 

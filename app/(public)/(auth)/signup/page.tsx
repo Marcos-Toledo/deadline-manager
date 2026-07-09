@@ -1,7 +1,7 @@
 "use client";
 
-import { registerUser } from "@/app/actions/auth";
-import { useAuth } from "@/app/hooks/useAuth";
+import { registerUser } from "@/actions/auth";
+import { useAuth } from "@/hooks/useAuth";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

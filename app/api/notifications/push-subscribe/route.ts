@@ -1,10 +1,10 @@
-import { requireAuth } from "@/app/lib/auth";
+import { requireAuth } from "@/lib/auth";
 import {
-  removePushSubscription,
-  savePushSubscription,
-} from "@/app/lib/notifications/push";
-import type { PushSubscription } from "web-push";
+    removePushSubscription,
+    savePushSubscription,
+} from "@/lib/notifications/push";
 import { NextResponse } from "next/server";
+import type { PushSubscription } from "web-push";
 
 export const dynamic = "force-dynamic";
 

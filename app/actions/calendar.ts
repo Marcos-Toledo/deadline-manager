@@ -1,12 +1,12 @@
 "use server";
 
-import { requireAuth } from "@/app/lib/auth";
+import { requireAuth } from "@/lib/auth";
+import { listAppCalendarEvents } from "@/lib/calendar";
 import {
-  getCalendarConnections,
-  removeCalendarConnection,
-} from "@/app/lib/calendar/connection";
-import { listAppCalendarEvents } from "@/app/lib/calendar";
-import { type CalendarEvent, type CalendarProvider } from "@/app/types";
+    getCalendarConnections,
+    removeCalendarConnection,
+} from "@/lib/calendar/connection";
+import { type CalendarEvent, type CalendarProvider } from "@/types";
 
 export async function getConnectedCalendars() {
   const user = await requireAuth();
@@ -25,7 +25,7 @@ export async function disconnectCalendar(provider: CalendarProvider) {
 }
 
 export async function getAppCalendarEvents(
-  provider: CalendarProvider
+  provider: CalendarProvider,
 ): Promise<CalendarEvent[]> {
   const user = await requireAuth();
   return listAppCalendarEvents(user.uid, provider);

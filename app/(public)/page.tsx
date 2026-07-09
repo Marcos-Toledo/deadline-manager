@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 
-import { Benefits } from "@/app/components/public/benefits";
-import { CTA } from "@/app/components/public/cta";
-import { Footer } from "@/app/components/public/footer";
-import { Hero } from "@/app/components/public/hero";
-import { Navbar } from "@/app/components/public/navbar";
-import { SocialProof } from "@/app/components/public/social-proof";
+import { Benefits } from "@/components/public/benefits";
+import { CTA } from "@/components/public/cta";
+import { Footer } from "@/components/public/footer";
+import { Hero } from "@/components/public/hero";
+import { Navbar } from "@/components/public/navbar";
+import { SocialProof } from "@/components/public/social-proof";
 
 export const metadata: Metadata = {
   title: "Gestão de Prazos Processuais | Nunca Mais Perca um Prazo",

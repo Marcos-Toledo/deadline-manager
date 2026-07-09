@@ -1,7 +1,7 @@
 "use client";
 
-import { createDeadline } from "@/app/actions/deadlines";
-import { type CreateDeadlineInput, type DeadlineType } from "@/app/types";
+import { createDeadline } from "@/actions/deadlines";
+import { type CreateDeadlineInput, type DeadlineType } from "@/types";
 import { Loader2, Plus } from "lucide-react";
 import { useRef, useState, useTransition } from "react";
 

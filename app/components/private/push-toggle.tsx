@@ -5,7 +5,7 @@ import {
     hasPushSubscription,
     subscribePush,
     unsubscribePush,
-} from "@/app/actions/notifications";
+} from "@/actions/notifications";
 import { Bell, BellOff, Loader2 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 

@@ -5,7 +5,7 @@ import {
     APP_SOURCE_PROPERTY,
     type CalendarEvent,
     type Deadline,
-} from "@/app/types";
+} from "@/types";
 import { Client } from "@microsoft/microsoft-graph-client";
 import type {
     Calendar,

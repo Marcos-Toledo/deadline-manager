@@ -1,11 +1,11 @@
 "use client";
 
 import {
-  getUnreadNotificationsCount,
-  getUserNotifications,
-  markNotificationsAsRead,
-} from "@/app/actions/notifications";
-import type { InAppNotification } from "@/app/types";
+    getUnreadNotificationsCount,
+    getUserNotifications,
+    markNotificationsAsRead,
+} from "@/actions/notifications";
+import type { InAppNotification } from "@/types";
 import { Bell, Check, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 

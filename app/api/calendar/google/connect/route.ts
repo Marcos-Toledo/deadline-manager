@@ -1,9 +1,9 @@
-import { requireAuth } from "@/app/lib/auth";
-import { getGoogleAuthUrl } from "@/app/lib/calendar/google";
+import { requireAuth } from "@/lib/auth";
+import { getGoogleAuthUrl } from "@/lib/calendar/google";
 import {
-  generateOAuthState,
-  setOAuthCookies,
-} from "@/app/lib/calendar/oauth-state";
+    generateOAuthState,
+    setOAuthCookies,
+} from "@/lib/calendar/oauth-state";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {

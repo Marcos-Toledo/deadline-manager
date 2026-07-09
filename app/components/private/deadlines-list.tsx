@@ -1,15 +1,15 @@
 "use client";
 
 import {
-  deleteDeadline,
-  refreshProcessMetadata,
-  syncDeadlineFromCalendar,
-} from "@/app/actions/deadlines";
-import { useEditDeadline } from "@/app/context/edit-deadline";
-import { compareDeadlineWithCalendarEvent } from "@/app/lib/calendar/compare";
-import type { CalendarEvent, Deadline } from "@/app/types";
-import { formatDateTimeLocal } from "@/app/utils/formatDateTimeLocal";
-import { formatarProcessoCNJ } from "@/app/utils/formatter-process-number";
+    deleteDeadline,
+    refreshProcessMetadata,
+    syncDeadlineFromCalendar,
+} from "@/actions/deadlines";
+import { useEditDeadline } from "@/context/edit-deadline";
+import { compareDeadlineWithCalendarEvent } from "@/lib/calendar/compare";
+import type { CalendarEvent, Deadline } from "@/types";
+import { formatDateTimeLocal } from "@/utils/formatDateTimeLocal";
+import { formatarProcessoCNJ } from "@/utils/formatter-process-number";
 import { Pencil, RefreshCw, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";

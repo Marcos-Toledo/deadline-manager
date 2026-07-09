@@ -1,4 +1,4 @@
-import type { Deadline, NotificationLog } from "@/app/types";
+import type { Deadline, NotificationLog } from "@/types";
 import twilio from "twilio";
 
 function getTwilioClient() {

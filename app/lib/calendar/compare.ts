@@ -1,4 +1,4 @@
-import type { CalendarEvent, Deadline } from "@/app/types";
+import type { CalendarEvent, Deadline } from "@/types";
 
 export function normalizeCalendarDate(date: string): string {
   return new Date(date).toISOString();

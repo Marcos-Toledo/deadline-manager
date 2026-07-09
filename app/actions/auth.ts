@@ -1,6 +1,6 @@
 "use server";
 
-import { adminAuth, adminDb } from "@/app/config/firebase-admin";
+import { adminAuth, adminDb } from "@/config/firebase-admin";
 
 export async function registerUser(formData: {
   name: string;

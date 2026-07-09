@@ -1,13 +1,13 @@
 import {
-  auth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signOut,
-} from "@/app/config/firebase";
+    auth,
+    GoogleAuthProvider,
+    signInWithPopup,
+    signOut,
+} from "@/config/firebase";
 import {
-  getAuth,
-  sendPasswordResetEmail,
-  signInWithEmailAndPassword,
+    getAuth,
+    sendPasswordResetEmail,
+    signInWithEmailAndPassword,
 } from "firebase/auth";
 
 export async function signInWithGoogle() {

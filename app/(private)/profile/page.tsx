@@ -1,5 +1,5 @@
-import { getUserProfile } from "@/app/actions/profile";
-import { ProfileForm } from "@/app/components/private/profile-form";
+import { getUserProfile } from "@/actions/profile";
+import { ProfileForm } from "@/components/private/profile-form";
 import Link from "next/link";
 
 export default async function ProfilePage() {

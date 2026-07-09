@@ -1,6 +1,6 @@
 "use server";
 
-import { adminAuth } from "@/app/config/firebase-admin";
+import { adminAuth } from "@/config/firebase-admin";
 import { cookies } from "next/headers";
 
 export async function getCurrentUser() {

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEditDeadline } from "@/app/context/edit-deadline";
-import type { CalendarEvent, CalendarProvider, Deadline } from "@/app/types";
+import { useEditDeadline } from "@/context/edit-deadline";
+import type { CalendarEvent, CalendarProvider, Deadline } from "@/types";
 import { Info, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

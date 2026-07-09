@@ -1,4 +1,4 @@
-import type { ProcessoMetadata } from "@/app/types/processo";
+import type { ProcessoMetadata } from "@/types/processo";
 
 export type CalendarProvider = "google" | "outlook";
 

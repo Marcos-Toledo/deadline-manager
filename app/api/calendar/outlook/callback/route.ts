@@ -1,10 +1,10 @@
-import { getCurrentUser } from "@/app/lib/auth";
-import { saveCalendarConnection } from "@/app/lib/calendar/connection";
-import { consumeOAuthCookies } from "@/app/lib/calendar/oauth-state";
+import { getCurrentUser } from "@/lib/auth";
+import { saveCalendarConnection } from "@/lib/calendar/connection";
+import { consumeOAuthCookies } from "@/lib/calendar/oauth-state";
 import {
-  findOrCreateOutlookCalendar,
-  getMicrosoftTokensFromCode,
-} from "@/app/lib/calendar/outlook";
+    findOrCreateOutlookCalendar,
+    getMicrosoftTokensFromCode,
+} from "@/lib/calendar/outlook";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {

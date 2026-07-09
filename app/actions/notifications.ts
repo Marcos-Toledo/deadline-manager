@@ -1,16 +1,16 @@
 "use server";
 
-import { adminDb } from "@/app/config/firebase-admin";
-import { requireAuth } from "@/app/lib/auth";
+import { adminDb } from "@/config/firebase-admin";
+import { requireAuth } from "@/lib/auth";
 import {
     removePushSubscription,
     savePushSubscription,
-} from "@/app/lib/notifications/push";
+} from "@/lib/notifications/push";
 import {
     type InAppNotification,
     type NotificationPreferences,
     DEFAULT_NOTIFICATION_PREFERENCES,
-} from "@/app/types";
+} from "@/types";
 import type { PushSubscription } from "web-push";
 
 const USERS_COLLECTION = "users";

@@ -15,14 +15,14 @@
 //   "size": 1
 // }
 
-import { adminDb } from "@/app/config/firebase-admin";
+import { adminDb } from "@/config/firebase-admin";
 import {
-  DatajudCacheEntry,
-  DatajudError,
-  DatajudProcesso,
-  DatajudSearchResponse,
-  ProcessoMetadata,
-} from "@/app/types/processo";
+    DatajudCacheEntry,
+    DatajudError,
+    DatajudProcesso,
+    DatajudSearchResponse,
+    ProcessoMetadata,
+} from "@/types/processo";
 
 const DATAJUD_BASE_URL =
   process.env.DATAJUD_BASE_URL ?? "https://api-publica.datajud.cnj.jus.br";

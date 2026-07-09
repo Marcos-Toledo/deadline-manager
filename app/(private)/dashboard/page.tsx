@@ -1,9 +1,9 @@
 import {
   getAppCalendarEvents,
   getConnectedCalendars,
-} from "@/app/actions/calendar";
-import { getUserDeadlines } from "@/app/actions/deadlines";
-import { DashboardClient } from "@/app/components/private/dashboard-client";
+} from "@/actions/calendar";
+import { getUserDeadlines } from "@/actions/deadlines";
+import { DashboardClient } from "@/components/private/dashboard-client";
 
 export const dynamic = "force-dynamic";
 
