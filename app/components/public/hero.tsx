@@ -37,7 +37,7 @@ export function Hero() {
         </div>
 
         <div className="relative">
-          <div className="rounded-2xl border border-base-200 bg-base-100 p-5 shadow-lg sm:p-6">
+          <div className="rounded-2xl border border-base-200 bg-base-100 p-3 shadow-lg sm:p-6">
             <div className="flex items-center justify-between border-b border-base-200 pb-3">
               <div className="flex items-center gap-2 text-sm font-medium text-neutral">
                 <svg
@@ -69,7 +69,7 @@ export function Hero() {
                   </p>
                   <p className="text-neutral/60">0001234-56.2024.8.26.0100</p>
                 </div>
-                <span className="badge badge-primary badge-outline">
+                <span className="badge badge-primary badge-outline max-sm:text-xs px-2">
                   3 dias
                 </span>
               </li>
@@ -80,7 +80,9 @@ export function Hero() {
                   </p>
                   <p className="text-neutral/60">0009876-54.2024.8.26.0100</p>
                 </div>
-                <span className="badge badge-warning badge-outline">1 dia</span>
+                <span className="badge badge-warning badge-outline max-sm:text-xs px-2">
+                  1 dia
+                </span>
               </li>
               <li className="flex items-center justify-between rounded-lg bg-base-200/60 px-4 py-3">
                 <div>
@@ -89,17 +91,27 @@ export function Hero() {
                   </p>
                   <p className="text-neutral/60">0005555-12.2024.8.26.0100</p>
                 </div>
-                <span className="badge badge-neutral badge-outline">
+                <span className="badge badge-neutral badge-outline max-sm:text-xs px-2">
                   7 dias
                 </span>
               </li>
             </ul>
             <div className="mt-4 flex items-center gap-2 text-xs text-neutral/60">
-              <span className="badge badge-ghost">Google Calendar</span>
-              <span className="badge badge-ghost">Outlook</span>
-              <span className="badge badge-ghost">Email</span>
-              <span className="badge badge-ghost">SMS</span>
-              <span className="badge badge-ghost">WhatsApp</span>
+              <span className="badge badge-ghost max-sm:text-xs px-1 sm:px-2">
+                Google Calendar
+              </span>
+              <span className="badge badge-ghost max-sm:text-xs px-1 sm:px-2">
+                Outlook
+              </span>
+              <span className="badge badge-ghost max-sm:text-xs px-1 sm:px-2">
+                Email
+              </span>
+              <span className="badge badge-ghost max-sm:text-xs px-1 sm:px-2">
+                SMS
+              </span>
+              <span className="badge badge-ghost max-sm:text-xs px-1 sm:px-2">
+                WhatsApp
+              </span>
             </div>
           </div>
         </div>

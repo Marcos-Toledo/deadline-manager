@@ -20,6 +20,7 @@ export const Header = () => {
 
   const navLinks = [
     { label: "Dashboard", href: "/dashboard" },
+    { label: "Buscar Processos", href: "/search" },
     { label: "Configurações", href: "/alert-settings" },
     { label: "Perfil", href: "/profile" },
   ];
@@ -43,6 +44,9 @@ export const Header = () => {
           <div className="hidden md:flex items-center gap-2 sm:gap-4">
             <ThemeController />
             <NotificationBell />
+            <Link href="/search" className="btn btn-ghost">
+              Buscar Processos
+            </Link>
             <Link href="/alert-settings" className="btn btn-ghost">
               Configurações
             </Link>

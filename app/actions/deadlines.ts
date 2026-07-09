@@ -3,38 +3,45 @@
 import { adminDb } from "@/config/firebase-admin";
 import { requireAuth } from "@/lib/auth";
 import {
-    deleteDeadlineCalendarEvent,
-    findDivergentCalendarEvent,
-    syncDeadlineToCalendar,
-    updateDeadlineCalendarEvent,
+  deleteDeadlineCalendarEvent,
+  findDivergentCalendarEvent,
+  syncDeadlineToCalendar,
+  updateDeadlineCalendarEvent,
 } from "@/lib/calendar";
 import { getCalendarConnections } from "@/lib/calendar/connection";
 import { buscarProcesso } from "@/lib/datajud";
 import {
-    type CalendarProvider,
-    type CreateDeadlineInput,
-    type Deadline,
-    type UpdateDeadlineInput,
+  type CalendarProvider,
+  type CreateDeadlineInput,
+  type Deadline,
+  type UpdateDeadlineInput,
 } from "@/types";
 import type {
-    DatajudCacheEntry,
-    DatajudProcesso,
-    ProcessoMetadata,
+  DatajudCacheEntry,
+  DatajudProcesso,
+  ProcessoMetadata,
 } from "@/types/processo";
 
 const COLLECTION = "deadlines";
 
 // Consulta Datajud em background: não deve bloquear/falhar a criação do prazo.
-export async function fetchDatajud(processNumber: string) {
+export async function fetchDatajud(
+  processNumber: string,
+): Promise<ProcessoMetadata | null> {
   try {
-    buscarProcesso(processNumber).catch((err: Error) => {
-      console.error("[createDeadline] Falha ao consultar Datajud:", err);
-    });
+    const cached = await getCachedProcessoByNumber(processNumber);
+    if (cached) {
+      return cached.processo;
+    }
+
+    const { processo } = await buscarProcesso(processNumber);
+    return processo;
   } catch (err) {
     console.error(
       "[createDeadline] Falha ao iniciar consulta Datajud:",
       err as Error,
     );
+    return null;
   }
 }
 

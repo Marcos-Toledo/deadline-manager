@@ -11,7 +11,7 @@ interface ProcessProfileProps {
   onClose: () => void;
 }
 
-interface ProcessProfileData {
+export interface ProcessProfileData {
   processo: ProcessoMetadata;
   rawData: DatajudProcesso;
 }
@@ -100,7 +100,7 @@ export function ProcessProfile({
   );
 }
 
-function ProcessProfileContent({ data }: { data: ProcessProfileData }) {
+export function ProcessProfileContent({ data }: { data: ProcessProfileData }) {
   const { processo, rawData } = data;
   const movimentos = rawData.movimentos ?? [];
 
@@ -252,7 +252,7 @@ function ProcessProfileContent({ data }: { data: ProcessProfileData }) {
   );
 }
 
-function PartesGroup({
+export function PartesGroup({
   title,
   partes,
 }: {
