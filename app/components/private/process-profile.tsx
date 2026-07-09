@@ -6,7 +6,7 @@ import { MESSAGES } from "@/lib/messages";
 import type { DatajudProcesso, ProcessoMetadata } from "@/types/processo";
 import { formatarProcessoCNJ } from "@/utils/formatter-process-number";
 import { X } from "lucide-react";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 
 interface ProcessProfileProps {
   processNumber: string;
@@ -42,17 +42,24 @@ export function ProcessProfile({
   const [data, setData] = useState<ProcessProfileData | null>(null);
   const { showError } = useActionFeedback();
 
+  const showErrorRef = useRef(showError);
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    showErrorRef.current = showError;
+    onCloseRef.current = onClose;
+  });
+
   useEffect(() => {
     startTransition(async () => {
       const result = await getCachedProcessoByNumber(processNumber);
       if (!result) {
-        showError(MESSAGES.generic.notFound);
-        onClose();
+        showErrorRef.current(MESSAGES.generic.notFound);
+        onCloseRef.current();
         return;
       }
       setData(result);
     });
-  }, [processNumber, showError, onClose]);
+  }, [processNumber]);
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
     if (e.target === e.currentTarget) {
