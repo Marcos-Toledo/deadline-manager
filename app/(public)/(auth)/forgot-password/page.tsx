@@ -1,5 +1,6 @@
 "use client";
 
+import { useActionFeedback } from "@/hooks/use-action-feedback";
 import { useAuth } from "@/hooks/useAuth";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -7,24 +8,22 @@ import { useState } from "react";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [resetSent, setResetSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const { passwordReset } = useAuth();
+  const { showSuccess, showError } = useActionFeedback();
 
   const handlePasswordReset = async (e: React.SubmitEvent) => {
     e.preventDefault();
     if (!email) {
-      setError("Digite seu email acima para receber o link de recuperação.");
+      showError("Digite seu email acima para receber o link de recuperação.");
       return;
     }
-    setError(null);
     setLoading(true);
     try {
       await passwordReset(email);
-      setResetSent(true);
+      showSuccess("Link de recuperação enviado!");
     } catch (err: unknown) {
-      setError((err as Error).message);
+      showError((err as Error).message);
     } finally {
       setLoading(false);
     }
@@ -51,12 +50,6 @@ export default function ForgotPassword() {
         onChange={(e) => setEmail(e.target.value)}
         required
       />
-      {error && <p className="text-error text-sm mt-2">{error}</p>}
-      {resetSent && (
-        <p className="text-success text-sm mt-2">
-          Link de recuperação enviado!
-        </p>
-      )}
       <button type="submit" className="btn btn-primary mt-4" disabled={loading}>
         {loading ? "Enviando..." : "Enviar link de recuperação"}
       </button>

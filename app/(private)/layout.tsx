@@ -1,5 +1,6 @@
 import { Loading } from "@/components/loading";
 import { Header } from "@/components/private/header";
+import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
@@ -42,6 +43,7 @@ export default async function RootLayout({
               </Suspense>
             </div>
           </main>
+          <Toaster />
         </body>
       </ThemeProvider>
     </html>

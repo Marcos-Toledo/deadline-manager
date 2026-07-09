@@ -1,6 +1,8 @@
 "use client";
 
 import { createDeadline } from "@/actions/deadlines";
+import { useActionFeedback } from "@/hooks/use-action-feedback";
+import { MESSAGES } from "@/lib/messages";
 import { type CreateDeadlineInput, type DeadlineType } from "@/types";
 import { Loader2, Plus } from "lucide-react";
 import { useRef, useState, useTransition } from "react";
@@ -29,27 +31,26 @@ interface DeadlineFormProps {
 export function DeadlineForm({ onSuccess, children }: DeadlineFormProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState<CreateDeadlineInput>(INITIAL_FORM);
+  const { showSuccess, showError } = useActionFeedback();
 
   const openModal = () => dialogRef.current?.showModal();
   const closeModal = () => {
     dialogRef.current?.close();
-    setError(null);
   };
 
   const handleSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
-    setError(null);
 
     startTransition(async () => {
       const result = await createDeadline(form);
       if (result.success) {
         setForm(INITIAL_FORM);
         closeModal();
+        showSuccess(MESSAGES.deadlines.created);
         onSuccess?.();
       } else {
-        setError(result.error ?? "Erro ao criar prazo.");
+        showError(result.error ?? MESSAGES.deadlines.createError);
       }
     });
   };
@@ -68,8 +69,6 @@ export function DeadlineForm({ onSuccess, children }: DeadlineFormProps) {
       <dialog ref={dialogRef} className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg mb-4">Novo prazo</h3>
-
-          {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
             <div>

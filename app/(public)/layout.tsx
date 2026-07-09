@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Suspense } from "react";
 import { Loading } from "../components/loading";
+import { Toaster } from "../components/ui/toaster";
 import { ThemeProvider } from "../context/theme";
 import "../globals.css";
 
@@ -37,6 +38,7 @@ export default async function RootLayout({
             <Suspense fallback={<Loading />}>{children}</Suspense>
           </main>
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   );

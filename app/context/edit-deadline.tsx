@@ -1,15 +1,17 @@
 "use client";
 
 import { createDeadline, updateDeadline } from "@/actions/deadlines";
+import { useActionFeedback } from "@/hooks/use-action-feedback";
+import { MESSAGES } from "@/lib/messages";
 import { type CreateDeadlineInput, type DeadlineType } from "@/types";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
-    createContext,
-    useContext,
-    useRef,
-    useState,
-    useTransition,
+  createContext,
+  useContext,
+  useRef,
+  useState,
+  useTransition,
 } from "react";
 import { formatarProcessoCNJ } from "../utils/formatter-process-number";
 
@@ -52,19 +54,17 @@ export const DeadlineFormProvider = ({
   const router = useRouter();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState<CreateDeadlineInput>(INITIAL_FORM);
   const [isEditing, setIsEditing] = useState(false);
+  const { showSuccess, showError } = useActionFeedback();
 
   const openModal = () => dialogRef.current?.showModal();
   const closeModal = () => {
     dialogRef.current?.close();
-    setError(null);
   };
 
   const handleSubmitCreate = (e: React.SubmitEvent) => {
     e.preventDefault();
-    setError(null);
 
     startTransition(async () => {
       const result = await createDeadline(form);
@@ -72,15 +72,15 @@ export const DeadlineFormProvider = ({
         setForm(INITIAL_FORM);
         closeModal();
         router.refresh();
+        showSuccess(MESSAGES.deadlines.created);
       } else {
-        setError(result.error ?? "Erro ao criar prazo.");
+        showError(result.error ?? MESSAGES.deadlines.createError);
       }
     });
   };
 
   const handleSubmitEdit = (e: React.SubmitEvent) => {
     e.preventDefault();
-    setError(null);
 
     startTransition(async () => {
       const result = await updateDeadline(form.id!, form);
@@ -88,8 +88,9 @@ export const DeadlineFormProvider = ({
         setForm(INITIAL_FORM);
         closeModal();
         router.refresh();
+        showSuccess(MESSAGES.deadlines.updated);
       } else {
-        setError(result.error ?? "Erro ao atualizar prazo.");
+        showError(result.error ?? MESSAGES.deadlines.updateError);
       }
     });
   };
@@ -103,8 +104,6 @@ export const DeadlineFormProvider = ({
           <h3 className="font-bold text-lg mb-4">
             {isEditing ? "Editar prazo" : "Novo prazo"}
           </h3>
-
-          {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
 
           <form
             onSubmit={isEditing ? handleSubmitEdit : handleSubmitCreate}

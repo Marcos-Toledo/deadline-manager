@@ -1,7 +1,9 @@
 "use client";
 
 import { registerUser } from "@/actions/auth";
+import { useActionFeedback } from "@/hooks/use-action-feedback";
 import { useAuth } from "@/hooks/useAuth";
+import { MESSAGES } from "@/lib/messages";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -10,19 +12,18 @@ import { useState } from "react";
 export default function Signup() {
   const router = useRouter();
   const { googleSignIn } = useAuth();
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const { showError } = useActionFeedback();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
 
     if (password !== confirmPassword) {
-      setError("As senhas não coincidem.");
+      showError("As senhas não coincidem.");
       return;
     }
 
@@ -30,7 +31,7 @@ export default function Signup() {
     const result = await registerUser({ name, email, password });
 
     if (!result?.success) {
-      setError(result?.error || "Erro ao cadastrar usuário");
+      showError(result?.error || MESSAGES.auth.registerError);
       setLoading(false);
     } else {
       router.push("/login?registered=true");
@@ -87,8 +88,6 @@ export default function Signup() {
       <p className="text-center mt-4">ou</p>
 
       <div className="flex flex-col gap-4">
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-
         <div>
           <label className="label block">Nome</label>
           <input

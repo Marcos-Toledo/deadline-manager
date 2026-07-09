@@ -1,6 +1,8 @@
 "use client";
 
 import { getCachedProcessoByNumber } from "@/actions/deadlines";
+import { useActionFeedback } from "@/hooks/use-action-feedback";
+import { MESSAGES } from "@/lib/messages";
 import type { DatajudProcesso, ProcessoMetadata } from "@/types/processo";
 import { formatarProcessoCNJ } from "@/utils/formatter-process-number";
 import { X } from "lucide-react";
@@ -38,18 +40,19 @@ export function ProcessProfile({
 }: ProcessProfileProps) {
   const [isPending, startTransition] = useTransition();
   const [data, setData] = useState<ProcessProfileData | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { showError } = useActionFeedback();
 
   useEffect(() => {
     startTransition(async () => {
       const result = await getCachedProcessoByNumber(processNumber);
       if (!result) {
-        setError("Processo não encontrado no cache.");
+        showError(MESSAGES.generic.notFound);
+        onClose();
         return;
       }
       setData(result);
     });
-  }, [processNumber]);
+  }, [processNumber, showError, onClose]);
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
     if (e.target === e.currentTarget) {
@@ -81,10 +84,6 @@ export function ProcessProfile({
             <div className="flex justify-center py-12">
               <span className="loading loading-spinner loading-md" />
             </div>
-          )}
-
-          {!isPending && error && (
-            <div className="alert alert-error alert-soft text-sm">{error}</div>
           )}
 
           {!isPending && data && <ProcessProfileContent data={data} />}

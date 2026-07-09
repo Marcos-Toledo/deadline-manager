@@ -1,6 +1,8 @@
 "use client";
 
 import { updateUserProfile } from "@/actions/profile";
+import { useActionFeedback } from "@/hooks/use-action-feedback";
+import { MESSAGES } from "@/lib/messages";
 import type { User } from "@/types";
 import { Loader2, Save, UserCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -18,14 +20,11 @@ export function ProfileForm({ initialProfile }: ProfileFormProps) {
     initialProfile?.phoneNumber ?? "",
   );
   const [oab, setOab] = useState(initialProfile?.oab ?? "");
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
   const [saving, startSaving] = useTransition();
+  const { showSuccess, showError } = useActionFeedback();
 
   const handleSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(false);
 
     startSaving(async () => {
       const result = await updateUserProfile({
@@ -36,11 +35,11 @@ export function ProfileForm({ initialProfile }: ProfileFormProps) {
       });
 
       if (!result.success) {
-        setError(result.error || "Erro ao atualizar perfil");
+        showError(result.error || MESSAGES.profile.updateError);
         return;
       }
 
-      setSuccess(true);
+      showSuccess(MESSAGES.profile.updated);
       router.refresh();
     });
   };
@@ -51,10 +50,6 @@ export function ProfileForm({ initialProfile }: ProfileFormProps) {
         <div className="flex items-center gap-2 mb-4">
           <UserCircle className="w-5 h-5 text-primary" />
           <h2 className="card-title">Meu perfil</h2>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-          {success && (
-            <p className="text-green-600 text-sm">Perfil atualizado.</p>
-          )}
         </div>
 
         <form

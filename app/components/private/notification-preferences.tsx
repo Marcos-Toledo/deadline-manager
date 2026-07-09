@@ -4,6 +4,8 @@ import {
     getUserNotificationPreferences,
     updateUserNotificationPreferences,
 } from "@/actions/notifications";
+import { useActionFeedback } from "@/hooks/use-action-feedback";
+import { MESSAGES } from "@/lib/messages";
 import {
     type NotificationChannel,
     type NotificationPreferences,
@@ -43,7 +45,7 @@ export function NotificationPreferencesPanel({
     useState<NotificationPreferences | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, startSaving] = useTransition();
-  const [saved, setSaved] = useState(false);
+  const { showSuccess, showError } = useActionFeedback();
 
   useEffect(() => {
     getUserNotificationPreferences().then((data) => {
@@ -77,8 +79,9 @@ export function NotificationPreferencesPanel({
     startSaving(async () => {
       const result = await updateUserNotificationPreferences(preferences);
       if (result.success) {
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
+        showSuccess(MESSAGES.notifications.preferencesSaved);
+      } else {
+        showError(MESSAGES.notifications.preferencesError);
       }
     });
   };
@@ -257,9 +260,6 @@ export function NotificationPreferencesPanel({
                 </>
               )}
             </button>
-            {saved && (
-              <span className="text-sm text-success">Preferências salvas!</span>
-            )}
           </div>
         </div>
       </div>

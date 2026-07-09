@@ -1,18 +1,20 @@
 "use client";
 
 import {
-    deleteDeadline,
-    refreshProcessMetadata,
-    syncDeadlineFromCalendar,
+  deleteDeadline,
+  refreshProcessMetadata,
+  syncDeadlineFromCalendar,
 } from "@/actions/deadlines";
 import { useEditDeadline } from "@/context/edit-deadline";
+import { useActionFeedback } from "@/hooks/use-action-feedback";
 import { compareDeadlineWithCalendarEvent } from "@/lib/calendar/compare";
+import { MESSAGES } from "@/lib/messages";
 import type { CalendarEvent, Deadline } from "@/types";
 import { formatDateTimeLocal } from "@/utils/formatDateTimeLocal";
 import { formatarProcessoCNJ } from "@/utils/formatter-process-number";
 import { Pencil, RefreshCw, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { ProcessProfile } from "./process-profile";
 
 const TYPE_LABELS: Record<Deadline["type"], string> = {
@@ -73,21 +75,11 @@ export function DeadlinesList({
   const [refreshingProcess, setRefreshingProcess] = useState<string | null>(
     null,
   );
-  const [refreshMessage, setRefreshMessage] = useState<{
-    id: string;
-    type: "success" | "error";
-    message: string;
-  } | null>(null);
   const [selectedProcessNumber, setSelectedProcessNumber] = useState<
     string | null
   >(null);
   const router = useRouter();
-
-  useEffect(() => {
-    if (!refreshMessage) return;
-    const timeout = setTimeout(() => setRefreshMessage(null), 3000);
-    return () => clearTimeout(timeout);
-  }, [refreshMessage]);
+  const { showSuccess, showError } = useActionFeedback();
 
   const {
     setForm = () => {},
@@ -110,7 +102,12 @@ export function DeadlinesList({
 
   const handleDelete = (id: string) => {
     startDelete(async () => {
-      await deleteDeadline(id);
+      const result = await deleteDeadline(id);
+      if (result.success) {
+        showSuccess(MESSAGES.deadlines.deleted);
+      } else {
+        showError(result.error ?? MESSAGES.deadlines.deleteError);
+      }
       router.refresh();
     });
   };
@@ -120,7 +117,10 @@ export function DeadlinesList({
     startSync(async () => {
       const result = await syncDeadlineFromCalendar(id);
       if (result.success) {
+        showSuccess(MESSAGES.deadlines.syncSuccess);
         router.refresh();
+      } else {
+        showError(result.error ?? MESSAGES.deadlines.syncError);
       }
       setSyncingId(null);
     });
@@ -221,25 +221,21 @@ export function DeadlinesList({
                             disabled={refreshingProcess === deadline.id}
                             onClick={async () => {
                               setRefreshingProcess(deadline.id);
-                              setRefreshMessage(null);
                               const result = await refreshProcessMetadata(
                                 deadline.id,
                                 true,
                               );
                               if (result.success) {
-                                setRefreshMessage({
-                                  id: deadline.id,
-                                  type: "success",
-                                  message: result.fromCache
-                                    ? "Dados já estavam atualizados"
-                                    : "Andamentos atualizados",
-                                });
+                                showSuccess(
+                                  result.fromCache
+                                    ? MESSAGES.deadlines.processAlreadyUpdated
+                                    : MESSAGES.deadlines.processRefreshed,
+                                );
                               } else {
-                                setRefreshMessage({
-                                  id: deadline.id,
-                                  type: "error",
-                                  message: result.error ?? "Erro ao atualizar",
-                                });
+                                showError(
+                                  result.error ??
+                                    MESSAGES.deadlines.processRefreshError,
+                                );
                               }
                               router.refresh();
                               setRefreshingProcess(null);
@@ -254,17 +250,6 @@ export function DeadlinesList({
                               }
                             />
                           </button>
-                          {refreshMessage?.id === deadline.id && (
-                            <div
-                              className={`text-xs mt-1 ${
-                                refreshMessage.type === "success"
-                                  ? "text-success"
-                                  : "text-error"
-                              }`}
-                            >
-                              {refreshMessage.message}
-                            </div>
-                          )}
                         </div>
                       </td>
                       <td>{TYPE_LABELS[deadline.type]}</td>

@@ -1,10 +1,12 @@
 "use client";
 
+import { useActionFeedback } from "@/hooks/use-action-feedback";
 import { useAuth } from "@/hooks/useAuth";
+import { MESSAGES } from "@/lib/messages";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Login() {
   const { googleSignIn, emailSignIn } = useAuth();
@@ -12,17 +14,29 @@ export default function Login() {
   const justRegistered = searchParams.get("registered") === "true";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { showSuccess, showError } = useActionFeedback();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (justRegistered) {
+      showSuccess(MESSAGES.auth.registerSuccess);
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("registered");
+      const query = params.toString();
+      router.replace(query ? `?${query}` : window.location.pathname, {
+        scroll: false,
+      });
+    }
+  }, [justRegistered, showSuccess, searchParams, router]);
 
   const handleEmailSignIn = async (e: React.SubmitEvent) => {
     e.preventDefault();
-    setError(null);
     setLoading(true);
     try {
       await emailSignIn(email, password);
     } catch (err: unknown) {
-      setError((err as Error).message);
+      showError((err as Error).message);
     } finally {
       setLoading(false);
     }
@@ -79,13 +93,6 @@ export default function Login() {
         <p className="text-center mt-4">ou</p>
 
         <div className="flex flex-col gap-4">
-          {justRegistered && (
-            <p className="text-green-600 text-sm">
-              Cadastro realizado! Faça login para continuar.
-            </p>
-          )}
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-
           <div>
             <label className="label block">Email</label>
             <input

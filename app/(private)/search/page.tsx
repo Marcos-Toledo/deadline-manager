@@ -6,6 +6,8 @@ import {
   ProcessProfileContent,
   type ProcessProfileData,
 } from "@/components/private/process-profile";
+import { useActionFeedback } from "@/hooks/use-action-feedback";
+import { MESSAGES } from "@/lib/messages";
 import { formatarProcessoCNJ } from "@/utils/formatter-process-number";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -17,6 +19,7 @@ export default function SearchPage() {
     null,
   );
   const router = useRouter();
+  const { showSuccess, showError } = useActionFeedback();
 
   const handleProcessSearch = async () => {
     try {
@@ -24,12 +27,18 @@ export default function SearchPage() {
       await fetchDatajud(searchProcess);
       const data = await getCachedProcessoByNumber(searchProcess);
       setSearchResult(data);
+      if (data) {
+        showSuccess("Processo encontrado.");
+      } else {
+        showError(MESSAGES.generic.notFound);
+      }
       router.refresh();
     } catch (err) {
       console.error(
         "[createDeadline] Falha ao iniciar consulta Datajud:",
         err as Error,
       );
+      showError(MESSAGES.generic.error);
     } finally {
       setIsLoading(false);
     }
@@ -41,35 +50,38 @@ export default function SearchPage() {
 
   return (
     <div className="flex flex-col gap-6 py-6">
-      <div className="flex items-center justify-end">
-        <label className="input">
-          <svg
-            className="h-[1em] opacity-50"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-          >
-            <g
-              strokeLinejoin="round"
-              strokeLinecap="round"
-              strokeWidth="2.5"
-              fill="none"
-              stroke="currentColor"
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+        <h1 className="text-2xl font-bold">Buscar Processos</h1>
+        <div className="flex items-center justify-end gap-2 flex-1">
+          <label className="input">
+            <svg
+              className="h-[1em] opacity-50"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
             >
-              <circle cx="11" cy="11" r="8"></circle>
-              <path d="m21 21-4.3-4.3"></path>
-            </g>
-          </svg>
-          <input
-            type="search"
-            className="grow"
-            placeholder="Search"
-            value={formatarProcessoCNJ(searchProcess)}
-            onChange={(e) => setSearchProcess(e.target.value)}
-          />
-        </label>
-        <button className="btn btn-primary" onClick={handleProcessSearch}>
-          buscar
-        </button>
+              <g
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                strokeWidth="2.5"
+                fill="none"
+                stroke="currentColor"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.3-4.3"></path>
+              </g>
+            </svg>
+            <input
+              type="search"
+              className="grow"
+              placeholder="Search"
+              value={formatarProcessoCNJ(searchProcess)}
+              onChange={(e) => setSearchProcess(e.target.value)}
+            />
+          </label>
+          <button className="btn btn-primary" onClick={handleProcessSearch}>
+            buscar
+          </button>
+        </div>
       </div>
       {searchResult && (
         <div className="card bg-base-100 border border-base-300">

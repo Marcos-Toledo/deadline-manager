@@ -6,6 +6,8 @@ import {
     subscribePush,
     unsubscribePush,
 } from "@/actions/notifications";
+import { useActionFeedback } from "@/hooks/use-action-feedback";
+import { MESSAGES } from "@/lib/messages";
 import { Bell, BellOff, Loader2 } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 
@@ -45,7 +47,7 @@ export function PushToggle() {
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(isSupported);
   const [toggling, startToggling] = useTransition();
-  const [error, setError] = useState<string | null>(null);
+  const { showSuccess, showError } = useActionFeedback();
 
   useEffect(() => {
     if (!supported) return;
@@ -56,24 +58,23 @@ export function PushToggle() {
   }, [supported]);
 
   const handleEnable = () => {
-    setError(null);
     startToggling(async () => {
       try {
         const publicKey = await getVapidPublicKey();
         if (!publicKey) {
-          setError("Chave VAPID pública não configurada.");
+          showError(MESSAGES.notifications.vapidKeyMissing);
           return;
         }
 
         const registration = await registerServiceWorker();
         if (!registration) {
-          setError("Service worker não suportado neste navegador.");
+          showError(MESSAGES.notifications.serviceWorkerNotSupported);
           return;
         }
 
         const permission = await Notification.requestPermission();
         if (permission !== "granted") {
-          setError("Permissão de notificação negada.");
+          showError(MESSAGES.notifications.notificationPermissionDenied);
           return;
         }
 
@@ -81,18 +82,18 @@ export function PushToggle() {
         const result = await subscribePush(subscription as never);
         if (result.success) {
           setSubscribed(true);
+          showSuccess(MESSAGES.notifications.pushEnabled);
         } else {
-          setError("Falha ao salvar inscrição de push.");
+          showError(MESSAGES.notifications.pushSubscriptionError);
         }
       } catch (err) {
         console.error(err);
-        setError((err as Error).message);
+        showError((err as Error).message);
       }
     });
   };
 
   const handleDisable = () => {
-    setError(null);
     startToggling(async () => {
       try {
         const registration = await navigator.serviceWorker.ready;
@@ -102,9 +103,10 @@ export function PushToggle() {
           await unsubscribePush(subscription.endpoint);
         }
         setSubscribed(false);
+        showSuccess(MESSAGES.notifications.pushDisabled);
       } catch (err) {
         console.error(err);
-        setError((err as Error).message);
+        showError(MESSAGES.notifications.pushDisableError);
       }
     });
   };
@@ -157,7 +159,6 @@ export function PushToggle() {
           Ativar push
         </button>
       )}
-      {error && <p className="text-sm text-error">{error}</p>}
     </div>
   );
 }
