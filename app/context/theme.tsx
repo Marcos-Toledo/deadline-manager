@@ -2,8 +2,8 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-const LIGHT_THEME = "nord";
-const DARK_THEME = "night";
+const LIGHT_THEME = "corporate";
+const DARK_THEME = "business";
 
 interface ThemeContextType {
   isDarkMode: boolean;
