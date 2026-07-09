@@ -60,7 +60,9 @@ export async function sendWhatsAppNotification(
     const client = getTwilioClient();
     await client.messages.create({
       body: buildMessage(deadline, window),
+      contentSid: process.env.TWILIO_WHATSAPP_CONTENT_SID,
       from: `whatsapp:${from}`,
+      contentVariables: JSON.stringify({ 1: buildMessage(deadline, window) }),
       to: `whatsapp:${phoneNumber}`,
     });
     return { status: "sent", sentAt: new Date().toISOString() };
