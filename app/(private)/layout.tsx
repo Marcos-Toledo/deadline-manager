@@ -1,5 +1,6 @@
 import { Loading } from "@/components/loading";
-import { Header } from "@/components/private/header";
+import { AppHeader } from "@/components/private/app-header";
+import { Sidebar } from "@/components/private/sidebar";
 import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -35,15 +36,30 @@ export default async function RootLayout({
     >
       <ThemeProvider>
         <body className="min-h-screen bg-base-100">
-          <main className="flex flex-col min-h-screen mt-20">
-            <Header />
-            <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
-              <Suspense fallback={<Loading />}>
-                <DeadlineFormProvider>{children}</DeadlineFormProvider>
-              </Suspense>
+          <div className="drawer lg:drawer-open">
+            <input id="app-drawer" type="checkbox" className="drawer-toggle" />
+
+            <div className="drawer-content flex flex-col min-h-screen bg-base-200">
+              <AppHeader />
+
+              <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden">
+                <Suspense fallback={<Loading />}>
+                  <DeadlineFormProvider>{children}</DeadlineFormProvider>
+                </Suspense>
+              </main>
+
+              <Toaster />
             </div>
-          </main>
-          <Toaster />
+
+            <div className="drawer-side">
+              <label
+                htmlFor="app-drawer"
+                aria-label="close sidebar"
+                className="drawer-overlay"
+              ></label>
+              <Sidebar />
+            </div>
+          </div>
         </body>
       </ThemeProvider>
     </html>
